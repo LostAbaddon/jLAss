@@ -4,6 +4,10 @@ My Personal Javascript Core Lib
 
 > Author: [LostAbaddon](mailto:lostabaddon@gmail.com)
 
+## Logs
+
+-	2018.11.01: Upload to Github.
+
 ## Includes
 
 -	Module Manager for b/n

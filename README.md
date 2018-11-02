@@ -20,7 +20,7 @@ My Personal Javascript Core Lib
 
 We can use "global" in both browser and node (b/n)
 
-> UpCase for class, LowCase for instance
+> UpCase for class, LowCase for instance\\
 > Obj.Y for function, Obj:Y for property
 
 ### Global

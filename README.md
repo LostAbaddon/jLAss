@@ -2,6 +2,8 @@
 
 My Personal Javascript Core Lib
 
+> Author: [LostAbaddon](lostabaddon@gmail.com)
+
 ## Includes
 
 -	Module Manager for b/n

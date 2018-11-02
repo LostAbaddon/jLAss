@@ -1,7 +1,4 @@
 require('../src');
-require('../src/utils/once');
-
-return;
 
 var { info, log } = logger(0);
 

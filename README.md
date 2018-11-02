@@ -4,10 +4,7 @@ My Personal Javascript Core Lib
 
 > Author: [LostAbaddon](mailto:lostabaddon@gmail.com)
 
-## Logs
-
--	2018.11.01: Upload to Github.
--	2018.11.01: 测试了LRU缓存方案，速度慢了10%，所以不要相信网上的JS-LRU方案，基本扯淡。
+> Version: 0.1.1
 
 ## Includes
 

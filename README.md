@@ -20,50 +20,50 @@ My Personal Javascript Core Lib
 
 We can use "global" in both browser and node (b/n)
 
-> UpCase for class, LowCase for instance
+> UpCase for class, LowCase for instance<br>
 > Obj.Y for function, Obj:Y for property
 
 ### Global
 
 -	promisify
--	setImmediate
+-	setImmediate<br>
 	Fire callback when the next loop just begins.
--	nextTick
+-	nextTick<br>
 	Fire callback when current loop just ends.
--	wait
+-	wait<br>
 	Promisify version for setTimeout
--	waitLoop
+-	waitLoop<br>
 	Promisify version for setImmediate
--	waitTick
+-	waitTick<br>
 	Promisify version for nextTick
--	Clock
+-	Clock<br>
 	Event-Timestamp Manager
 
 ### Promisify
 
--	global.promisify
-	Convert a function to a Promise object.
+-	global.promisify<br>
+	Convert a function to a Promise object.<br>
 	The last argument of the function is "next" which is the resolve function of Promise.
--	global.promisify.withTimeout
-	Convert a function to a Promise object with timeout.
-    The returned Promise object has a function `timeout` which can set timeout or callback or both.
+-	global.promisify.withTimeout<br>
+	Convert a function to a Promise object with timeout.<br>
+    The returned Promise object has a function `timeout` which can set timeout or callback or both.<br>
     Timeout `<= 0` means never timeout.
 ```javascript
 promisify(fn(..., res)).timeout([timeout], [callback]);
 ```
--   global.promisify.serial
-	Do the tasks one by one, and the result of previous one will be passed to the next one.
+-   global.promisify.serial<br>
+	Do the tasks one by one, and the result of previous one will be passed to the next one.<br>
 	Two usages:
 	-	`promisify.serial(fn1, fn2, ..., fnx, data, callback)`
 	-	`promisify.serial([fn1, fn2, ..., fnx], data, callbak)`
--   global.promisify.parallel
-	Do the tasks simulately, and the results will be arranged in an array, and passed to the callback.
+-   global.promisify.parallel<br>
+	Do the tasks simulately, and the results will be arranged in an array, and passed to the callback.<br>
 	Two usages:
 	-	`promisify.parallel(fn1, fn2, ..., fnx, data, callback)`
 	-	`promisify.parallel([fn1, fn2, ..., fnx], data, callbak)`
 
--   global.promisify.some
-	Do the tasks simulately, and only returns the first finished one.
+-   global.promisify.some<br>
+	Do the tasks simulately, and only returns the first finished one.<br>
 	Two usages:
 	-	`promisify.some(fn1, fn2, ..., fnx, data, callback)`
 	-	`promisify.some([fn1, fn2, ..., fnx], data, callbak)`
@@ -77,7 +77,7 @@ promisify(fn(..., res)).timeout([timeout], [callback]);
 ### Function
 
 -	Function.is
--	AsyncFunction
+-	AsyncFunction<br>
 	Class of async functions
 -	AsyncFunction.is
 
@@ -109,10 +109,10 @@ promisify(fn(..., res)).timeout([timeout], [callback]);
 
 ### Math
 
--	Math.pick
-	For Array, pick one random element inside it.
+-	Math.pick<br>
+	For Array, pick one random element inside it.<br>
 	For Number, pick a random number not lager than it.
--	Math.range
+-	Math.range<br>
 	Pick a random number in a range.
 
 ## Events [TBD]

@@ -13,9 +13,9 @@
  * 			deleteFolders函数，批量删除文件夹，Promise化
  */
 
-const fs = require('fs');
+const FS = require('fs');
 const Path = require('path');
-const setStyle = require('./commandline/setConsoleStyle');
+const setStyle = require('../commandline/setConsoleStyle');
 
 const IDLE = Symbol('IDLE');
 const BUSY = Symbol('BUSY');
@@ -30,7 +30,7 @@ var manager = {
 };
 
 // 批量创建目录，自动处理依赖关系，并解决异步创建过程中的冲突问题
-fs.mkfolder = (path, cb) => new Promise(async (resolve, reject) => {
+FS.mkfolder = (path, cb) => new Promise(async (resolve, reject) => {
 	path = Path.normalize(path);
 	path = path.replace(new RegExp(Path.sep + '+$'), '');
 	path = path.split(Path.sep);
@@ -88,7 +88,7 @@ var mkLoop = () => {
 		if (status === IDLE) {
 			// 检查是否存在该目录
 			manager.tasks[path] = BUSY;
-			fs.stat(path, (err, stat) => {
+			FS.stat(path, (err, stat) => {
 				if (!err) { // 顺利结束
 					manager.tasks[path] = FREE;
 					let cb = manager.hooks[path];
@@ -114,7 +114,7 @@ var mkLoop = () => {
 					manager.tasks[path] = IDLE;
 				}
 				else if (canBuild) { // 都已准备好，创建
-					fs.mkdir(path, (err, stat) => {
+					FS.mkdir(path, (err, stat) => {
 						var cb = manager.hooks[path];
 						if (!!err) {
 							manager.tasks[path] = DIED;
@@ -146,7 +146,7 @@ var mkLoop = () => {
 };
 
 // 批量获取路径状态：不存在、文件、目录、其它
-fs.filterPath = (paths, cb) => new Promise((res, rej) => {
+FS.filterPath = (paths, cb) => new Promise((res, rej) => {
 	var count = paths.length, nonexist = [], files = [], folders = [], wrong = [];
 	if (count === 0) {
 		let result = { nonexist, files, folders, wrong };
@@ -157,7 +157,7 @@ fs.filterPath = (paths, cb) => new Promise((res, rej) => {
 		return;
 	}
 	paths.forEach(path => {
-		fs.stat(path, (err, stat) => {
+		FS.stat(path, (err, stat) => {
 			if (!!err || !stat) {
 				nonexist.push(path);
 			}
@@ -179,7 +179,7 @@ fs.filterPath = (paths, cb) => new Promise((res, rej) => {
 	});
 });
 // 批量创建文件夹
-fs.createFolders = (folders, logger) => new Promise((res, rej) => {
+FS.createFolders = (folders, logger) => new Promise((res, rej) => {
 	logger = logger || console;
 	var count = folders.length, result = { success: [], failed: [] };
 	if (count === 0) {
@@ -190,7 +190,7 @@ fs.createFolders = (folders, logger) => new Promise((res, rej) => {
 	}
 	folders.forEach(async folder => {
 		logger.log(setStyle('创建目录：', 'bold') + folder);
-		var err = await fs.mkfolder(folder);
+		var err = await FS.mkfolder(folder);
 		if (!!err) {
 			logger.error(setStyle('创建目录错误：', 'red bold') + folder);
 			logger.error(err);
@@ -205,7 +205,7 @@ fs.createFolders = (folders, logger) => new Promise((res, rej) => {
 	});
 });
 // 批量创建空文件
-fs.createEmptyFiles = (files, logger) => new Promise((res, rej) => {
+FS.createEmptyFiles = (files, logger) => new Promise((res, rej) => {
 	logger = logger || console;
 	var count = files.length, result = { success: [], failed: [] };
 	if (count === 0) {
@@ -216,7 +216,7 @@ fs.createEmptyFiles = (files, logger) => new Promise((res, rej) => {
 	}
 	files.forEach(file => {
 		logger.log(setStyle('创建文件：', 'bold') + file);
-		fs.appendFile(file, '', 'utf8', err => {
+		FS.appendFile(file, '', 'utf8', err => {
 			if (!!err) {
 				logger.error(setStyle('创建文件错误：', 'red bold') + file);
 				logger.error(err);
@@ -232,7 +232,7 @@ fs.createEmptyFiles = (files, logger) => new Promise((res, rej) => {
 	});
 });
 // 批量删除文件
-fs.deleteFiles = (files, logger) => new Promise((res, rej) => {
+FS.deleteFiles = (files, logger) => new Promise((res, rej) => {
 	logger = logger || console;
 	var count = files.length, result = { success: [], failed: [] };
 	if (count === 0) {
@@ -243,7 +243,7 @@ fs.deleteFiles = (files, logger) => new Promise((res, rej) => {
 	}
 	files.forEach(file => {
 		logger.info(setStyle('删除文件：', 'bold') + file);
-		fs.unlink(file, err => {
+		FS.unlink(file, err => {
 			if (!!err) {
 				logger.error(setStyle('删除文件错误：', 'red bold') + file);
 				logger.error(err);
@@ -270,7 +270,7 @@ var deleteFolders = (files, logger) => new Promise((res, rej) => {
 	}
 	files.forEach(file => {
 		logger.info(setStyle('删除目录：', 'bold') + file);
-		fs.rmdir(file, err => {
+		FS.rmdir(file, err => {
 			if (!!err) {
 				logger.error(setStyle('删除目录错误：', 'red bold') + file);
 				logger.error(err);
@@ -300,7 +300,7 @@ var deleteFoldersForcely = (files, logger) => new Promise((res, rej) => {
 		res(result);
 	};
 	files.forEach(file => {
-		fs.readdir(file, async (err, fls) => {
+		FS.readdir(file, async (err, fls) => {
 			if (!!err) {
 				result.failed.push(file);
 				cb();
@@ -313,7 +313,7 @@ var deleteFoldersForcely = (files, logger) => new Promise((res, rej) => {
 			}
 			else {
 				fls = fls.map(p => file + Path.sep + p);
-				fls = await fs.filterPath(fls);
+				fls = await FS.filterPath(fls);
 				let task = 2;
 				let job = async () => {
 					task --;
@@ -324,7 +324,7 @@ var deleteFoldersForcely = (files, logger) => new Promise((res, rej) => {
 					cb();
 				};
 				(async () => {
-					var stat = await fs.deleteFiles(fls.files, logger);
+					var stat = await FS.deleteFiles(fls.files, logger);
 					stat.success.forEach(p => result.success.push(p));
 					stat.failed.forEach(p => result.failed.push(p));
 					job();
@@ -339,7 +339,7 @@ var deleteFoldersForcely = (files, logger) => new Promise((res, rej) => {
 		});
 	});
 });
-fs.deleteFolders = (files, force, logger) => new Promise(async (res, rej) => {
+FS.deleteFolders = (files, force, logger) => new Promise(async (res, rej) => {
 	var result;
 	if (!!force) result = await deleteFoldersForcely(files, logger);
 	else result = await deleteFolders(files, logger);
@@ -350,7 +350,7 @@ class FolderWatcher {
 	constructor (folder, delay, isFile) {
 		this.changeList = [];
 		try {
-			this.watcher = fs.watch(folder, { recursive: true }, (stat, file) => {
+			this.watcher = FS.watch(folder, { recursive: true }, (stat, file) => {
 				if (isFile) file = folder;
 				else file = folder + Path.sep + file;
 				if (this.changeList.indexOf(file) < 0) this.changeList.push(file);
@@ -358,7 +358,7 @@ class FolderWatcher {
 				this.timer = setTimeout(async () => {
 					var list = this.changeList.copy();
 					this.changeList.splice(0, this.changeList.length);
-					list = await fs.filterPath(list);
+					list = await FS.filterPath(list);
 					var result = { delete: list.nonexist, create: [] };
 					list.folders.forEach(p => result.create.push(p));
 					list.files.forEach(p => result.create.push(p));
@@ -388,7 +388,7 @@ class FolderWatcher {
 		if (!!this.watcher) this.watcher.close();
 	}
 }
-fs.watchFolderAndFile = (folder, delay, isFile, onCreate, onDelete) => {
+FS.watchFolderAndFile = (folder, delay, isFile, onCreate, onDelete) => {
 	var watcher = new FolderWatcher(folder, delay, isFile);
 	if (onCreate instanceof Function) watcher.onCreate(onCreate);
 	if (onDelete instanceof Function) watcher.onDelete(onDelete);

@@ -2,8 +2,8 @@
  * Name:	Auxillary Utils and Extends for DateTime
  * Desc:    日期时间相关拓展
  * Author:	LostAbaddon
- * Version:	0.0.1
- * Date:	2017.09.23
+ * Version:	0.0.2
+ * Date:	2018.11.02
  */
 
 const getDTMatch = (format, match, lim, def) => {
@@ -13,7 +13,14 @@ const getDTMatch = (format, match, lim, def) => {
 	else temp = temp.length;
 	if (temp < lim) temp = lim;
 	return temp;
-}
+};
+const formatString = (str, len) => {
+	if (len === 0) return '';
+	var l = str.length;
+	if (l > len) str = str.substring(l - len, l);
+	else if (l < len) str = str.prepadding(len, '0');
+	return str;
+};
 const getDateString = (Y, M, D, link) => {
 	link = link || '/';
 	var temp = [];
@@ -32,13 +39,9 @@ const getTimeString = (h, m, s, ms, link) => {
 	if (ms.length > 0) result += '.' + ms;
 	return result;
 };
-const timeNormalize = (time, format, datelink, timelink, combinelink) => {
+const timeNormalize = (time, format='YYYYMMDDhhmmss', datelink='/', timelink=':', combinelink=' ') => {
 	time = time || new Date();
 	// format = format || 'YYYYMMDDhhmmssx';
-	format = format || 'YYYYMMDDhhmmss';
-	datelink = datelink || '/';
-	timelink = timelink || ':';
-	combinelink = combinelink || ' ';
 
 	var Ys = getDTMatch(format, /Y/g, 0, 0);
 	var Ms = getDTMatch(format, /M/g, 1, 0);
@@ -48,21 +51,13 @@ const timeNormalize = (time, format, datelink, timelink, combinelink) => {
 	var ss = getDTMatch(format, /s/g, 0, 0);
 	var mss = getDTMatch(format, /x/g, 0);
 
-	var Y = (time.getYear() + 1900 + '').prepadding(Ys, '0');
-	var M = (time.getMonth() + 1 + '').prepadding(Ms, '0');
-	var D = (time.getDate() + '').prepadding(Ds, '0');
-	var h = (time.getHours() + '').prepadding(hs, '0');
-	var m = (time.getMinutes() + '').prepadding(mms, '0');
-	var s = (time.getSeconds() + '').prepadding(ss, '0');
-	var ms = (time.getMilliseconds() + '').prepadding(mss, '0');
-
-	if (Ys === 0) Y = '';
-	if (Ms === 0) M = '';
-	if (Ds === 0) D = '';
-	if (hs === 0) h = '';
-	if (mms === 0) m = '';
-	if (ss === 0) s = '';
-	if (mss === 0) ms = '';
+	var Y = formatString(time.getYear() + 1900 + '', Ys);
+	var M = formatString(time.getMonth() + 1 + '', Ms);
+	var D = formatString(time.getDate() + '', Ds);
+	var h = formatString(time.getHours() + '', hs);
+	var m = formatString(time.getMinutes() + '', mms);
+	var s = formatString(time.getSeconds() + '', ss);
+	var ms = formatString(time.getMilliseconds() + '', mss);
 
 	var sDate = getDateString(Y, M, D, datelink);
 	var sTime = getTimeString(h, m, s, ms, timelink);

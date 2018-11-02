@@ -7,6 +7,7 @@ My Personal Javascript Core Lib
 ## Logs
 
 -	2018.11.01: Upload to Github.
+-	2018.11.01: 测试了LRU缓存方案，速度慢了10%，所以不要相信网上的JS-LRU方案，基本扯淡。
 
 ## Includes
 
@@ -115,7 +116,7 @@ promisify(fn(..., res)).timeout([timeout], [callback]);
 
 -	Math.pick<br>
 	For Array, pick one random element inside it.<br>
-	For Number, pick a random number not lager than it.
+	For Number, pick a boolean value whether a random number less than the given value;
 -	Math.range<br>
 	Pick a random number in a range.
 

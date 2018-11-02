@@ -6,8 +6,6 @@
  * Date:	2018.10.30
  */
 
-const AsyncFunction = (async () => {}).constructor;
-
 const promisify = (fn) => {
 	if (!(fn instanceof Function)) return null;
 	if (!!fn._promised) return fn;

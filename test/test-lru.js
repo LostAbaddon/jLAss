@@ -1,3 +1,12 @@
+require('../src');
+
+var s = String.random(10);
+console.log(s);
+console.log(s.prepadding(20, '_'));
+console.log(s.prepadding(20, '_', true));
+
+return;
+
 class Raw {
 	constructor () {
 		this._datastore = Object.create(null);

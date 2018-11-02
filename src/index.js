@@ -2,8 +2,8 @@
  * Name:	Common Core
  * Desc:    辅助工具
  * Author:	LostAbaddon
- * Version:	0.0.2
- * Date:	2017.08.24
+ * Version:	0.0.3
+ * Date:	2018.11.02
  *
  * 热更新require库
  * 字符串拓展、随机穿
@@ -12,6 +12,20 @@
  * 辅助工具
  * Object的copy与extent功能
  */
+
+try {
+	if (!!window) {
+		window.global = window;
+		global._env = 'browser';
+		global.require = () => {};
+	}
+	else {
+		global._env = 'node';
+	}
+}
+catch (err) {
+	global._env = 'node';
+}
 
 global._ = (path, module) => {
 	path = path.split(/[\/\\,\.\:;]/).map(p => p.trim()).filter(p => p.length > 0);
@@ -35,44 +49,15 @@ global._ = (path, module) => {
 };
 _('Utils');
 
-require('./loadall');
+require('./utils/loadall');
 require('./extend');
-require('./datetime');
-require('./logger');
+require('./utils/datetime');
+require('./utils/logger');
+
 require('./moduleManager');
 require('./events/eventManager');
-// require('./algorithm');
 // require('./threads/threadManager');
 
-const FS = require('fs');
-const Path = require('path');
+// require('./algorithm');
 
-global.Utils.preparePath = async (path, cb) => {
-	var has = FS.access(path, (err) => {
-		if (!err) return cb(true);
-		var parent = Path.parse(path).dir;
-		global.Utils.preparePath(parent, (result) => {
-			if (!result) return cb(false);
-			FS.mkdir(path, (err) => {
-				if (!err) return cb(true);
-			});
-		});
-	});
-};
-global.Utils.preparePathSync = path => {
-	var has;
-	try {
-		has = FS.accessSync(path);
-		return true;
-	}
-	catch (err) {}
-	var parent = Path.parse(path).dir;
-	has = global.Utils.preparePathSync(parent);
-	if (!has) return false;
-	try {
-		FS.mkdirSync(path);
-	}
-	catch (err) {
-		return false;
-	}
-};
+require('./fs/prepare');

@@ -6,7 +6,7 @@ const readdir = fs.readdirSync;
 
 const AvailableExtTypes = ['.js', '.json'];
 
-var load_root = __dirname + path.sep + '..' + path.sep;
+var load_root = __dirname + path.sep + '..' + path.sep + '..' + path.sep;
 
 const getDir = dir => {
 	if (dir[0] !== path.sep && dir[1] !== ':') dir = load_root + dir;
@@ -41,7 +41,7 @@ const loadall = (url, is_all) => {
 			folders.push(p);
 		}
 	});
-	folders.forEach(p => loadall(p, true));
+	folders.forEach(p => loadall(p, is_all));
 	files.forEach(p => require(p));
 	if (headers[0]) require(headers[0]);
 	if (headers[1]) require(headers[1]);

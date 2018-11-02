@@ -25,5 +25,12 @@ Start to build my personal js-core lib.
 
 -	调整目录结构
 -	调整部分函数
--	增加了once化函数
--	增加了对queueMicroTask的promisify版本支持
+-	增加了 once 化函数
+-	增加了对 queueMicroTask 的 promisify 版本支持
+
+### 2018.11.02
+
+-	增加了 loadall 的路径解析规则
+-	增加了 Version 类
+-	增加了对是否支持线程的判断
+-	once 化增加对 promisify 的支持

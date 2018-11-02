@@ -11,7 +11,6 @@ require('./promisify');
 if (!!global.setTimeout) { // For Process instead of Thread
 	global.setImmediate = global.setImmediate || function (callback) { setTimeout(callback, 0); };
 	global.nextTick = !!process ? process.nextTick || global.setImmediate : global.setImmediate;
-	global.queueMicrotask = global.queueMicrotask || global.nextTick;
 	global.wait = promisify((delay, next) => {
 		var start = new Date().getTime();
 		setTimeout(() => next(new Date().getTime() - start), delay);
@@ -24,10 +23,10 @@ if (!!global.setTimeout) { // For Process instead of Thread
 		var start = new Date().getTime();
 		nextTick(() => next(new Date().getTime() - start));
 	});
-	global.waitQueue = promisify(next => {
-		var start = new Date().getTime();
-		queueMicrotask(() => next(new Date().getTime() - start));
-	});
+	// if (!!global.queueMicrotask) global.waitQueue = promisify(next => {
+	// 	var start = new Date().getTime();
+	// 	queueMicrotask(() => next(new Date().getTime() - start));
+	// });
 }
 
 global.Clock = class Clock {

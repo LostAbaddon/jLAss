@@ -7,11 +7,26 @@
  */
 
 global.oncilize = fn => {
-	var called = false, value;
-	return (...args) => {
-		if (called) return value;
-		called = true;
-		value = fn(...args);
-		return value;
-	};
+	var called = false, value, ofn;
+	if (fn._promised) {
+		ofn = (...args) => new Promise(async (res, rej) => {
+			if (called) {
+				await waitLoop();
+				res(value);
+				return;
+			}
+			called = true;
+			value = await fn(...args);
+			res(value);
+		});
+	}
+	else {
+		ofn = (...args) => {
+			if (called) return value;
+			called = true;
+			value = fn(...args);
+			return value;
+		};
+	}
+	return ofn;
 };

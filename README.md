@@ -2,7 +2,7 @@
 
 My Personal Javascript Core Lib
 
-> Author: [LostAbaddon](lostabaddon@gmail.com)
+> Author: [LostAbaddon](mailto:lostabaddon@gmail.com)
 
 ## Includes
 

@@ -2,8 +2,8 @@
  * Name:	Timer Utils
  * Desc:    Timer 类拓展工具
  * Author:	LostAbaddon
- * Version:	0.0.1
- * Date:	2017.11.09
+ * Version:	0.0.3
+ * Date:	2018.11.02
  */
 
 require('./promisify');
@@ -11,6 +11,7 @@ require('./promisify');
 if (!!global.setTimeout) { // For Process instead of Thread
 	global.setImmediate = global.setImmediate || function (callback) { setTimeout(callback, 0); };
 	global.nextTick = !!process ? process.nextTick || global.setImmediate : global.setImmediate;
+	global.queueMicrotask = global.queueMicrotask || global.nextTick;
 	global.wait = promisify((delay, next) => {
 		var start = new Date().getTime();
 		setTimeout(() => next(new Date().getTime() - start), delay);
@@ -22,6 +23,10 @@ if (!!global.setTimeout) { // For Process instead of Thread
 	global.waitTick = promisify(next => {
 		var start = new Date().getTime();
 		nextTick(() => next(new Date().getTime() - start));
+	});
+	global.waitQueue = promisify(next => {
+		var start = new Date().getTime();
+		queueMicrotask(() => next(new Date().getTime() - start));
 	});
 }
 

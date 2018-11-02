@@ -38,6 +38,9 @@ We can use "global" in both browser and node (b/n)
 	Promisify version for setImmediate
 -	waitTick<br>
 	Promisify version for nextTick
+-	waitQueue<br>
+	Promisify version for queueMicrotask<br>
+	which is a V8 version of nextTick and always run after nextTick.
 -	Clock<br>
 	Event-Timestamp Manager
 

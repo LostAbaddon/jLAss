@@ -26,3 +26,4 @@ Start to build my personal js-core lib.
 -	调整目录结构
 -	调整部分函数
 -	增加了once化函数
+-	增加了对queueMicroTask的promisify版本支持

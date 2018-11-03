@@ -29,7 +29,9 @@ We can use "global" in both browser and node (b/n)
 ### Global
 
 -	promisify
--	oncilize
+-	oncilize<br>
+	Make function and promise run only once.<br>
+	call `fn.refresh()` to allow it be run again.
 -	setImmediate<br>
 	Fire callback when the next loop just begins.
 -	nextTick<br>

@@ -28,5 +28,6 @@ global.oncilize = fn => {
 			return value;
 		};
 	}
+	ofn.refresh = () => called = false;
 	return ofn;
 };

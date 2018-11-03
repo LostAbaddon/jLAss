@@ -82,8 +82,8 @@ class ADV {
 	}
 	_update () {
 		if (this._length < this._active) return;
-
 		this._length = this._limit;
+
 		const list = [];
 		for (let k in this._datastore) {
 			let [v, c] = this._datastore[k];

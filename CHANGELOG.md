@@ -40,3 +40,4 @@ Start to build my personal js-core lib.
 -	调增 promisify.some 为 promisify.any
 -	增加 promisify 三个流程函数的别名
 -	调整 LRU 测试的实现，LRU在大量数据与读写时速度与 Object 或 Map 差不多，内存使用减少；自己的测试类在海量数据读写的速度和内存使用上都比 LRU 好。
+-	once 函数增加 refresh 功能

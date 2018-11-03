@@ -9,9 +9,9 @@ const AvailableExtTypes = ['.js', '.json'];
 var load_root = __dirname + path.sep + '..' + path.sep + '..' + path.sep;
 
 const getDir = dir => {
-	if (dir[0] === '~' && dir[1] === path.sep) dir = process.cwd() + dir.substring(2, dir.length);
+	if (dir[0] === '~' && dir[1] === path.sep) dir = process.cwd() + dir.substring(1, dir.length);
 	else if (dir[0] !== path.sep && dir[1] !== ':') dir = load_root + dir;
-	return path.normalize(dir);
+	return path.resolve(dir);
 };
 const loadall = (url, is_all) => {
 	var headers = [], files = [], folders = [];
@@ -86,3 +86,4 @@ global.load = url => {
 	}
 };
 global.setLoadRoot = url => load_root = url;
+global.getLoadPath = getDir;

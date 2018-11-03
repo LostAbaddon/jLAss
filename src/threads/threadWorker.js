@@ -1,123 +1,93 @@
-// One Thread, One Task
+/**
+ * Name:	Thread Keeper
+ * Desc:    线程内辅助工具
+ * Author:	LostAbaddon
+ * Version:	0.0.1
+ * Date:	2018.11.04
+ */
 
-var CurrentQuest = null;
-var CurrentPath = '';
+global._env = 'node';
+global._canThread = true;
 
-// For Task Done
-this.finish = (status, msg) => {
-	if (CurrentQuest === null) return;
-	postMessage({
-		quest: CurrentQuest,
-		action: 'complete',
-		ok: status,
-		data: msg
-	});
-	CurrentQuest = null;
-};
-// For Message
-this.post = msg => {
-	if (CurrentQuest === null) return;
-	postMessage({
-		quest: CurrentQuest,
-		action: 'message',
-		msg: msg
-	});
-};
-// For Errors
-this.report = (type, msg, data) => {
-	__postError({
-		type: type,
-		msg: msg.replace(/(^\n*|\n*$)/gi, ''),
-		data: data
-	});
-};
+global.thread = require('worker_threads');
 
-/*
-task class structure:
-{
-	quest: String,
-	worker: Async Function, return null for async.
-	onmessage: Function: msg => {}
+global._ = (path, module) => {
+	path = path.split(/[\/\\,\.\:;]/).map(p => p.trim()).filter(p => p.length > 0);
+	if (path.length < 1) return global;
+	var node = global, last = path.pop();
+	path.forEach(p => {
+		var next = node[p];
+		if (!next) {
+			next = {};
+			node[p] = next;
+		}
+		node = next;
+	});
+	if (!!module) {
+		node[last] = module;
+	}
+	else if (!node[last]) {
+		node[last] = {};
+	}
+	return node[last];
+};
+_('Utils');
+
+// 加载工具包
+require('../utils/loadall');
+require('../extend');
+require('../utils/datetime');
+require('../utils/logger');
+
+// 线程事务管理器
+
+const EventEmitter = require('events');
+const EE = new EventEmitter();
+global.register = (tag, callback) => {
+	if (tag === 'init') EE.once(tag, callback)
+	else EE.on(tag, callback)
+};
+global.request = (event, data) => {
+	thread.parentPort.postMessage({
+		event,
+		data,
+		postAt: Date.now()
+	});
+};
+global.send = msg => global.request('message', msg);
+global.reply = (event, data) => {
+	thread.parentPort.postMessage({
+		event: 'reply:' + event.event + ':' + event.postAt,
+		originEvent: event.event,
+		data,
+		postAt: Date.now()
+	});
+};
+global.suicide = () => global.request('suicide');
+process.exit = global.suicide;
+
+thread.parentPort.on('message', msg => {
+	if (!msg.event) return;
+	msg.receiveAt = Date.now();
+	EE.emit(msg.event, msg.data, msg);
+});
+
+// 加载指定文件
+if (!!thread.workerData && !!thread.workerData.scripts) {
+	if (Array.is(thread.workerData.scripts)) {
+		thread.workerData.scripts.forEach(fp => require(fp));
+	}
+	else {
+		require(thread.workerData.scripts);
+	}
 }
-*/
-((global) => {
-	var tasks = {}; // For thread-tasks, key-task pair	
-	global.register = task => {
-		tasks[task.quest] = task;
-	};
-	global.invoke = async (quest, opt) => {
-		var q = tasks[quest];
-		if (!q) {
-			let err = { type: 'invoke', quest: quest, message: "No Such Quest: " + quest };
-			report('no_such_quest', err.message, err);
-			finish(false, err);
-			return;
-		}
-		var result;
-		try {
-			result = await q.worker(opt);
-		}
-		catch (err) {
-			report('quest_error', err.message, err);
-			finish(false, err);
-			return;
-		}
-		finish(true, result);
-	};
-	global.transfer = (quest, opt) => {
-		var q = tasks[quest];
-		if (!q) {
-			report('no_such_quest', "No Such Quest: " + quest, { type: 'message', quest: quest });
-			return;
-		}
-		if (!q) return;
-		q.onmessage(opt);
-	};
-}) (this);
 
-var attachScript = path => {
-	if (!path) return;
-	if (path.substr(0, 1) === '.') {
-		path = CurrentPath + '/' + path;
-	}
-	try {
-		importScripts(path);
-	}
-	catch (err) {
-		console.error('Import Script Error:', path);
-		report('import_script_error', err.message, path);
-	}
-};
-var init = (filelist, loglev) => {
-	importScripts(CurrentPath + '/../extend.js');
-	importScripts(CurrentPath + '/../datetime.js');
-	importScripts(CurrentPath + '/threadLogger.js');
+// 触发启动事件
 
-	setLogLev(loglev);
-
-	if (!!filelist && !!filelist.length) filelist.map(path => {
-		attachScript(path);
-	});
-};
-
-// Communicate with Process
-this.onmessage = (data) => {
-	data = data.data;
-	if (data.action === 'init') {
-		CurrentPath = data.path;
-		init(data.filelist, data.loglev);
-	}
-	else if (data.action === 'attach') {
-		attachScript(data.script);
-	}
-	else if (data.action === 'quest') {
-		CurrentQuest = data.quest;
-		invoke(data.quest, data.data);
-	}
-	else if (data.action === 'message') {
-		transfer(CurrentQuest, data.data);
-	}
-	else if (data.action === 'terminate') {
-		this.close();
-	}
-};
+EE.emit('init', thread.workerData.data, {
+	event: 'init',
+	data: thread.workerData.data,
+	scripts: thread.workerData.scripts,
+	sendAt: Date.now(),
+	receiveAt: Date.now()
+});

@@ -41,3 +41,5 @@ Start to build my personal js-core lib.
 -	增加 promisify 三个流程函数的别名
 -	调整 LRU 测试的实现，LRU在大量数据与读写时速度与 Object 或 Map 差不多，内存使用减少；自己的测试类在海量数据读写的速度和内存使用上都比 LRU 好。
 -	once 函数增加 refresh 功能
+-	公开了 getLoadPath 方法，使用“~/”从 `process.cwd()` 位置加载文件，默认从 jLAss 包位置开始加载
+-	实现了简单的 ThreadManager，线程内自动加载一系列基础库，并对主线程与子线程之间的通讯进行封装。

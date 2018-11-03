@@ -51,6 +51,10 @@ We can use "global" in both browser and node (b/n)
 	load all js / json files under a given folder, and the second argument can decide load the sub folders or not, which default value is true.
 -	Version<br>
 	Version class for parsing version strings.
+-	getLoadPath<br>
+	获取绝对路径：“./”开始则从 jLAss 包位置开始加载，“~/”开始则从 `process.cwd()` 位置开始加载
+-	setLoadRoot<br>
+	指定 getLoadPath 开始的根路径（默认为 jLAss 包位置）
 
 ### Promisify
 
@@ -231,7 +235,9 @@ cmdLauncher.launch();
 
 ## Threads [TBD]
 
-Not Done Yet...
+-	Utils.Threads<br>
+	Simple Thread Manager, return a thread-worker wrapper.<br>
+	Worker will load a list of js core lib.
 
 ## Utils
 

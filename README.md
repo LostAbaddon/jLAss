@@ -64,20 +64,23 @@ promisify(fn(..., res)).timeout([timeout], [callback]);
 ```
 -   global.promisify.serial<br>
 	Do the tasks one by one, and the result of previous one will be passed to the next one.<br>
+	Alias: promisify.s<br>
 	Two usages:
 	-	`promisify.serial(fn1, fn2, ..., fnx, data, callback)`
 	-	`promisify.serial([fn1, fn2, ..., fnx], data, callbak)`
 -   global.promisify.parallel<br>
 	Do the tasks simulately, and the results will be arranged in an array, and passed to the callback.<br>
+	Alias: promisify.p<br>
 	Two usages:
 	-	`promisify.parallel(fn1, fn2, ..., fnx, data, callback)`
 	-	`promisify.parallel([fn1, fn2, ..., fnx], data, callbak)`
 
--   global.promisify.some<br>
+-   global.promisify.any<br>
 	Do the tasks simulately, and only returns the first finished one.<br>
+	Alias: promisify.a<br>
 	Two usages:
-	-	`promisify.some(fn1, fn2, ..., fnx, data, callback)`
-	-	`promisify.some([fn1, fn2, ..., fnx], data, callbak)`
+	-	`promisify.any(fn1, fn2, ..., fnx, data, callback)`
+	-	`promisify.any([fn1, fn2, ..., fnx], data, callbak)`
 
 ### Object
 

@@ -93,7 +93,7 @@ const fun_prep = (promisible, ...args) => {
 	return [funs, data, cb];
 };
 
-promisify.serial = promisify(async (...args) => {
+promisify.s = promisify.serial = promisify(async (...args) => {
 	var [funs, data, res] = fun_prep(true, ...args);
 	for (let fun of funs) {
 		let v;
@@ -103,7 +103,7 @@ promisify.serial = promisify(async (...args) => {
 	}
 	res(data);
 });
-promisify.parallel = promisify(async (...args) => {
+promisify.p = promisify.parallel = promisify(async (...args) => {
 	var [funs, data, res] = fun_prep(true, ...args);
 	var tasks = funs.length, results = [];;
 	funs.forEach(async (f, i) => {
@@ -116,7 +116,7 @@ promisify.parallel = promisify(async (...args) => {
 		res(results);
 	});
 });
-promisify.some = promisify(async (...args) => {
+promisify.a = promisify.any = promisify(async (...args) => {
 	var [funs, data, res] = fun_prep(true, ...args);
 	funs.forEach(async (f, i) => {
 		var v;

@@ -14,8 +14,18 @@ const worker = ThreadManager.create('~/test/worker1.js', {});
 	await worker.request('fuck', 'you all');
 	console.log('step 4');
 	var result = await ThreadManager.evaluate(
-		data => data.a + data.b,
+		data => {
+			var result = data.a + data.b;
+			return 'Sum is ' + result;
+		},
 		{ a: 1, b: 10 }
 	);
 	console.log('step 5: ' + result);
+	result = await worker.evaluate(data => {
+		return data.name + ' is ' + (data.age || 30) + ' years old.'
+	}, {
+		name: 'LostAbaddon',
+		age: '32'
+	});
+	console.log('step 6: ' + result);
 })();

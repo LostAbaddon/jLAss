@@ -1,3 +1,5 @@
+// console.log('Thread-' + thread.threadId + ' is online!!!');
+
 register('init', (data, event) => {
 	console.log('Thread Worker Launched!!!');
 	console.log(data);
@@ -19,6 +21,14 @@ register('fuck', (msg, event) => {
 	setTimeout(() => {
 		suicide();
 	}, 2000);
+});
+
+register('test', (msg, event) => {
+	console.log('Thread-' + thread.threadId + ' Get Test Task!');
+	setTimeout(() => {
+		var result = thread.threadId;
+		reply(event, result);
+	}, Math.random() * 500);
 });
 
 module.exports = 'This is thread-worker content!'

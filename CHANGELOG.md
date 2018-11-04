@@ -47,7 +47,16 @@ Start to build my personal js-core lib.
 
 ### 2018.11.04
 
--	ThreadManager 增加 evaluate 功能<br>
-	使用 `ThreadManager.evaluate(fn, data, callback)` 起一个线程运行指定函数。
 -	增加 pump 函数<br>
 	可实现等待一定时间后执行最后一次参数（stack模式）或全部参数都执行（pump模式），默认stack模式。
+
+---
+
+## 0.1.2
+
+### 2018.11.04
+
+-	ThreadManager 增加 evaluate 功能<br>
+	使用 `ThreadManager.evaluate(fn, data, callback)` 起一个线程运行指定函数。
+-	ThreadWorker 增加 evaluate 功能
+-	增加线程池功能，由线程池模块自行完成线程分派和调度

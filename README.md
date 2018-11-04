@@ -4,7 +4,7 @@ My Personal Javascript Core Lib
 
 > Author: [LostAbaddon](mailto:lostabaddon@gmail.com)
 
-> Version: 0.1.1
+> Version: 0.1.2
 
 ## Includes
 
@@ -230,6 +230,8 @@ cmdLauncher.launch();
 	-	Use `send(msg)` to send message to main thread;<br>
 	-	Use `request(event, data)` to call main thread with message `{ event, data}`;<br>
 	-	Use `suicide` to tell main thread to kill current thread worker
+-	ThreadPool<br>
+	A thread pool which can choise thread automatically.
 
 ## Utils
 

@@ -66,8 +66,34 @@ global.reply = (event, data) => {
 global.suicide = () => global.request('suicide');
 process.exit = global.suicide;
 
+const evaluate = event => {
+	var fun = event.data.fn;
+	var data = event.data.data;
+	var result;
+	try {
+		result = eval(fun)(data);
+	}
+	catch (err) {
+		reply(event, { err: err.toString(), result: null });
+		return;
+	}
+	reply(event, { err: null, result });
+};
+const loadFiles = files => {
+	if (Array.is(files)) files.forEach(file => require(file));
+	else require(files);
+};
+
 thread.parentPort.on('message', msg => {
 	if (!msg.event) return;
+	if (msg.event === 'evaluate') {
+		evaluate(msg);
+		return;
+	}
+	if (msg.event === 'loadfile') {
+		loadFiles(msg.data);
+		return;
+	}
 	msg.receiveAt = Date.now();
 	EE.emit(msg.event, msg.data, msg);
 });
@@ -84,7 +110,7 @@ if (!!thread.workerData && !!thread.workerData.scripts) {
 
 // 触发启动事件
 
-EE.emit('init', thread.workerData.data, {
+if (!!thread.workerData.data) EE.emit('init', thread.workerData.data, {
 	event: 'init',
 	data: thread.workerData.data,
 	scripts: thread.workerData.scripts,

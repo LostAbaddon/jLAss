@@ -159,13 +159,6 @@ var cmdLauncher = clp({
 })
 .describe('多文件夹自动同步者。\n' + setStyle('当前版本：', 'bold') + 'v' + SyncerVersion)
 .addOption('--config -c <config> >> 配置文档地址')
-.addOption('--showdiff -sd >> 只查看变更结果')
-.addOption('--ignore -i >> 是否忽略删除')
-.addOption('--deamon -d [duration(^\\d+$|^\\d+\\.\\d*$)=10] >> 是否启用监控模式，可配置自动监控时间间隔，默认时间为十分钟')
-.addOption('--deaf -df >> 失聪模式')
-.addOption('--delay -dl <delay> >> 巡视后行动延迟时长')
-.addOption('--silence -s >> 不启用命令行控制面板')
-.addOption('--web -w >> 启用Web后台模式' + setStyle('【待开发】', ['green', 'bold']))
 .addOption('--socket -skt >> 启用Socket后台模式' + setStyle('【待开发】', ['green', 'bold']))
 .on('command', params => {
 	...
@@ -188,31 +181,10 @@ var rtmLauncher = clp({
 	}
 })
 .describe('多文件夹自动同步者。\n' + setStyle('当前版本：', 'bold') + 'v' + SyncerVersion)
-.add('refresh|re >> 强制同步更新')
-.add('start|st >> 开始巡视模式')
-.add('stop|sp >> 停止巡视模式')
 .add('list|lt >> 显示当前分组同步信息')
 .addOption('--group -g <group> >> 指定group标签后可查看指定分组下的源情况')
 .addOption('--files -f <path> >> 查看指定路径下的文件列表')
 .addOption('--all -a >> 显示所有文件与文件夹，不打开则只显示有变化的文件与文件夹')
-.add('delete|del [...files] >> 删除文件列表')
-.addOption('--group -g <group> >> 指定分组')
-.addOption('--notforce -nf >> 强制删除整个目录')
-.add('create|new [...files] >> 创建文件列表')
-.addOption('--group -g <group> >> 指定分组')
-.addOption('--folder -f >> 指定创建的是文件夹')
-.add('copy|cp <source> <target> >> 从外源复制文件进来')
-.addOption('--group -g <group> >> 指定分组')
-.addOption('--notforce -nf >> 强制覆盖文件')
-.add('move|mv <source> <target> >> 从外源复制文件进来')
-.addOption('--group -g <group> >> 指定分组')
-.addOption('--notforce -nf >> 强制覆盖文件')
-.add('health|ht [duration(^\\d+$|^\\d+\\.\\d*$)=1] >> 查看当前 CPU 与 MEM 使用状态，统计时长单位为秒')
-.addOption('--interval -i [interval(^\\d+$|^\\d+\\.\\d*$)=1] >> 定式更新，更新间隔单位为秒')
-.addOption('--stop -s >> 定制定式更新')
-.add('history|his >> 查看更新文件历史')
-.addOption('--all -a >> 查看启动以来的更新文件历史')
-.add('status|stt >> 显示当前配置')
 .on('command', (param, command) => {
 	...
 })
@@ -225,7 +197,7 @@ var rtmLauncher = clp({
 .on('exit', (param, command) => {
 	...
 })
-.on('health', (param, all, command) => {
+.on('list', (param, all, command) => {
 	...
 })
 ;
@@ -238,6 +210,23 @@ cmdLauncher.launch();
 -	Utils.Threads<br>
 	Simple Thread Manager, return a thread-worker wrapper.<br>
 	Worker will load a list of js core lib.
+-	Utils.Threads.create(filelist, init_data)<br>
+	Create a thread and load filelist, start with init_data
+-	Worker<br>
+	Wrapped ThreadWorker.<br>
+	-	`worker.send(msg)` to send message to thread;<br>
+	-	`worker.request(msg, data)` to call thread worker with message `{ event, data }`, return a promise object;<br>
+	-	`worker.suicide()` to kill the thread worker;<br>
+	-	`count` is the running task count;<br>
+-	ThreadWorker.Stat<br>
+	Status of worker: `IDLE`, `BUSY`, `DEAD`
+-	ThreadWorker<br>
+	A worker with basic core libs.<br>
+	-	Use `register(tag, fn)` to response the request from main thread;<br>
+		register the "init" event to response the init_data which passed from main thread.<br>
+	-	Use `send(msg)` to send message to main thread;<br>
+	-	Use `request(event, data)` to call main thread with message `{ event, data}`;<br>
+	-	Use `suicide` to tell main thread to kill current thread worker
 
 ## Utils
 

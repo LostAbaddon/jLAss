@@ -3,6 +3,8 @@ require('../src/threads/threadManager');
 
 const ThreadManager = _('Utils.Threads');
 
+return;
+
 const worker = ThreadManager.create('~/test/worker1.js', {});
 
 (async () => {
@@ -11,6 +13,6 @@ const worker = ThreadManager.create('~/test/worker1.js', {});
 	console.log('step 2');
 	worker.request('fuck', 'you');
 	console.log('step 3');
-	await worker.requestAndWait('fuck', 'you all');
+	await worker.request('fuck', 'you all');
 	console.log('step 4');
 })();

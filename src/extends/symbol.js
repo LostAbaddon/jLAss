@@ -6,7 +6,7 @@
  * Date:	2017.11.09
  */
 
-Symbol.setSymbols = (host, symbols) => {
+Symbol.set = Symbol.setSymbols = (host, symbols) => {
 	if (Array.is(host) && !symbols) {
 		symbols = host;
 		host = null;

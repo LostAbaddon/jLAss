@@ -17,10 +17,10 @@ class MAP {
 		this._datastore = new Map();
 	}
 	set (k, v) {
-		this._datastore[k] = v;
+		this._datastore.set(k, v);
 	}
 	get (k) {
-		return this._datastore[k];
+		return this._datastore.get(k);
 	}
 }
 
@@ -186,7 +186,7 @@ const tester = (ds, label, limit=100) => {
 	console.log('=============================');
 };
 
-const rndTester = (ds, label, limit=100, task=1000) => {
+const rndTester = (ds, label, limit=100, task=1000, loop=100) => {
 	M.start();
 
 	var start, end, tester;
@@ -215,14 +215,14 @@ const rndTester = (ds, label, limit=100, task=1000) => {
 
 // var limit = 100, task = 100000000;
 // var limit = 100000000, task = 100;
-var limit = 100, task = 10000;
+var limit = 100, task = 100000000, loop = 1000;
 
 // tester(MEM, 'MEM', limit);
 // tester(MAP, 'Map', limit);
 // tester(LRU, 'LRU', limit);
 // tester(ADV, 'ADV', limit);
 
-// rndTester(MEM, 'MEM', limit, task);
-// rndTester(MAP, 'Map', limit, task);
-// rndTester(LRU, 'LRU', limit, task);
-rndTester(ADV, 'ADV', limit, task);
+// rndTester(MEM, 'MEM', limit, task, loop);
+// rndTester(MAP, 'Map', limit, task, loop);
+// rndTester(LRU, 'LRU', limit, task, loop);
+rndTester(ADV, 'ADV', limit, task, loop);

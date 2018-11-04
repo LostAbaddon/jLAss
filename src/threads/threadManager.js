@@ -31,6 +31,9 @@ class ThreadWorker extends EventEmitter {
 			}
 		});
 		this.id = this._worker.threadId;
+		this.tasks = new Map();
+		this.stat = ThreadWorker.Stat.IDLE;
+
 		this._worker.on('message', data => {
 			if (!data || !data.event || !data.postAt) return;
 			var tag = data.event;
@@ -43,43 +46,70 @@ class ThreadWorker extends EventEmitter {
 		this.on('suicide', this.suicide);
 	}
 	send (msg) {
-		this.request('message', msg);
-	}
-	request (event, data) {
+		if (this.stat === ThreadWorker.Stat.DEAD) return;
 		this._worker.postMessage({
-			event,
+			event: 'message',
 			needReply: false,
-			data,
+			data: msg,
 			postAt: Date.now()
 		});
 	}
-	requestAndWait (event, data, callback) {
+	request (event, data, callback) {
+		if (this.stat === ThreadWorker.Stat.DEAD) return;
+		this.stat = ThreadWorker.Stat.BUSY;
+
+		var n = Date.now();
+		var eventTag = event + ':' + n;
+		this.tasks.set(eventTag, true);
+
 		return new Promise((res, rej) => {
-			var n = Date.now();
 			this._worker.postMessage({
 				event,
 				needReply: true,
 				data,
 				postAt: n
 			});
-			this.once('reply:' + event + ':' + n, (data, event) => {
+			this.once('reply:' + eventTag, (data, event) => {
 				var msg = data.data;
+				this.tasks.delete(eventTag);
+				if (this.tasks.size === 0) this.stat = ThreadWorker.Stat.IDLE;
 				if (!!callback) callback(msg);
 				res(msg);
 			});
 		});
 	}
+	get count () {
+		return this.tasks.size;
+	}
 	suicide () {
+		this.stat = ThreadWorker.Stat.DEAD;
 		this._worker.terminate();
 	}
 }
+ThreadWorker.Stat = Symbol.set(['IDLE', 'BUSY', 'DEAD']);
 
 const TM = {
-	// Load list of files, and then send the data.
+	// 根据 filenames 批量载入运行程序，并传入初始参数 data
 	create: (filenames, data) => {
 		var worker = new ThreadWorker(filenames, data);
 		return worker;
 	},
+	evaluate: (fn, data, callback) => new Promise((res, rej) => {
+		var worker = new ThreadWorker(__dirname + '/threadEvaluater.js', {
+			event: 'evaluate',
+			data: data,
+			fun: fn.toString()
+		});
+		worker.on('evaluate', data => {
+			var err = data.err;
+			data = data.result;
+			if (!!err) data = null;
+			if (!!callback) callback(data, err);
+			worker.suicide();
+			if (!err) res(data, err);
+			else rej(err);
+		});
+	})
 };
 
 module.exports = TM;

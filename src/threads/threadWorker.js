@@ -1,5 +1,5 @@
 /**
- * Name:	Thread Keeper
+ * Name:	Thread Worker
  * Desc:    线程内辅助工具
  * Author:	LostAbaddon
  * Version:	0.0.1

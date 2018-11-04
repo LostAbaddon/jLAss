@@ -1,6 +1,7 @@
 /**
  * Name:	Oncilize Function
- * Desc:    日志记录拓展
+ * Desc:    只能执行一次的函数，此后返回首次执行结果
+ * 			支持Promise对象
  * Author:	LostAbaddon
  * Version:	0.0.2
  * Date:	2018.11.02

@@ -32,6 +32,9 @@ We can use "global" in both browser and node (b/n)
 -	oncilize<br>
 	Make function and promise run only once.<br>
 	call `fn.refresh()` to allow it be run again.
+-	pumplize<br>
+	Make function delay for a while and use the last called arguments (stack mode) or all the called arguments (pump mode).<br>
+	Default mode is stack mode.
 -	setImmediate<br>
 	Fire callback when the next loop just begins.
 -	nextTick<br>

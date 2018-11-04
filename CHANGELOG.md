@@ -15,7 +15,7 @@ Start to build my personal js-core lib.
 ### 2018.11.01
 
 -	Upload to Github
--	测试了LRU缓存方案，速度慢了10%，所以不要相信网上的JS-LRU方案，基本扯淡。
+-	测试了LRU缓存方案，比 Map 速度慢了10%，内存使用也更大，所以不要相信网上的 JS-LRU 方案。
 
 ---
 

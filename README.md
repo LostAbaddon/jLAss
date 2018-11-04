@@ -205,7 +205,7 @@ var rtmLauncher = clp({
 cmdLauncher.launch();
 ```
 
-## Threads [TBD]
+## Threads
 
 -	Utils.Threads<br>
 	Simple Thread Manager, return a thread-worker wrapper.<br>

@@ -106,7 +106,7 @@ const TM = {
 			if (!!err) data = null;
 			if (!!callback) callback(data, err);
 			worker.suicide();
-			if (!err) res(data, err);
+			if (!err) res(data);
 			else rej(err);
 		});
 	})

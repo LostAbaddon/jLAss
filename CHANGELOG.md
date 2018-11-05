@@ -60,3 +60,7 @@ Start to build my personal js-core lib.
 	使用 `ThreadManager.evaluate(fn, data, callback)` 起一个线程运行指定函数。
 -	ThreadWorker 增加 evaluate 功能
 -	增加线程池功能，由线程池模块自行完成线程分派和调度
+
+### 2018.11.05
+
+-	pump 化函数提供 dump 直接输出的功能

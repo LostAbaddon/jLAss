@@ -31,6 +31,11 @@ global.pumplize = (fn, cb, last_only=true) => {
 			else stack.push(args);
 		}
 	};
+	pfn.dump = () => {
+		if (timer) clearTimeout(timer);
+		timer = null;
+		done();
+	};
 	pfn.timeout = to => {
 		if (isNaN(to)) return pfn;
 		timeout = to;

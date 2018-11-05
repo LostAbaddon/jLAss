@@ -1,5 +1,7 @@
 require('../src');
 
+const LRU = require('../src/datastore/lrucache');
+
 class MEM {
 	constructor () {
 		this._datastore = Object.create(null);
@@ -21,39 +23,6 @@ class MAP {
 	}
 	get (k) {
 		return this._datastore.get(k);
-	}
-}
-
-class LRU {
-	constructor (limit=100) {
-		this._cache = new Map();
-		this._datastore = new Map();
-		this._limit = limit;
-		this._length = 0;
-	}
-	set (k, v) {
-		const p = this._cache.get(k);
-		this._cache.set(k, v);
-		if (p === undefined) {
-			this._update();
-		}
-	}
-	get (k) {
-		var v = this._cache.get(k);
-		if (v !== undefined) return v;
-		v = this._datastore.get(k);
-		if (v !== undefined) {
-			this._cache.set(k, v);
-			this._update()
-		}
-		return v;
-	}
-	_update () {
-		this._length ++;
-		if (this._length < this._limit) return;
-		this._datastore = this._cache;
-		this._cache = new Map();
-		this._length = 0;
 	}
 }
 
@@ -223,7 +192,7 @@ const rndTester = (ds, label, limit=100, task=1000, loop=100) => {
 
 var limit = 100, task = 1000000, loop = 100;
 
-rndTester(MEM, 'MEM', limit, task, loop);
+// rndTester(MEM, 'MEM', limit, task, loop);
 // rndTester(MAP, 'Map', limit, task, loop);
-// rndTester(LRU, 'LRU', limit, task, loop);
+rndTester(LRU, 'LRU', limit, task, loop);
 // rndTester(ADV, 'ADV', limit, task, loop);

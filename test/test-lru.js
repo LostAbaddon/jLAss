@@ -26,24 +26,24 @@ class MAP {
 
 class LRU {
 	constructor (limit=100) {
-		this._cache = Object.create(null);
-		this._datastore = Object.create(null);
+		this._cache = new Map();
+		this._datastore = new Map();
 		this._limit = limit;
 		this._length = 0;
 	}
 	set (k, v) {
-		const p = this._cache[k];
-		this._cache[k] = v;
-		if (this._cache[k] === undefined) {
+		const p = this._cache.get(k);
+		this._cache.set(k, v);
+		if (p === undefined) {
 			this._update();
 		}
 	}
 	get (k) {
-		var v = this._cache[k];
+		var v = this._cache.get(k);
 		if (v !== undefined) return v;
-		v = this._datastore[k];
+		v = this._datastore.get(k);
 		if (v !== undefined) {
-			this._cache[k] = v;
+			this._cache.set(k, v);
 			this._update()
 		}
 		return v;
@@ -52,7 +52,7 @@ class LRU {
 		this._length ++;
 		if (this._length < this._limit) return;
 		this._datastore = this._cache;
-		this._cache = Object.create(null);
+		this._cache = new Map();
 		this._length = 0;
 	}
 }
@@ -194,12 +194,12 @@ const rndTester = (ds, label, limit=100, task=1000, loop=100) => {
 	var v = 'V: ' + Math.floor(Math.random() * task);
 
 	start = Date.now();
-	for (let t = 0; t < 100; t ++) {
+	for (let t = 0; t < loop; t ++) {
 		for (let i = 0; i < 10000; i ++) {
 			let j = Math.floor(Math.random() * task);
 			let k = 'K-' + j;
 			let vv = tester.get(k);
-			v = vv ? vv : 'V: ' + Math.floor(Math.random() * task);
+			v = ' | V: ' + (Math.floor(Math.random() * task) + vv ? vv.length : 0);
 			j = Math.floor(Math.random() * task);
 			k = 'K-' + j;
 			tester.set(k, v);
@@ -215,14 +215,15 @@ const rndTester = (ds, label, limit=100, task=1000, loop=100) => {
 
 // var limit = 100, task = 100000000;
 // var limit = 100000000, task = 100;
-var limit = 100, task = 100000000, loop = 1000;
 
 // tester(MEM, 'MEM', limit);
 // tester(MAP, 'Map', limit);
 // tester(LRU, 'LRU', limit);
 // tester(ADV, 'ADV', limit);
 
-// rndTester(MEM, 'MEM', limit, task, loop);
+var limit = 100, task = 1000000, loop = 100;
+
+rndTester(MEM, 'MEM', limit, task, loop);
 // rndTester(MAP, 'Map', limit, task, loop);
 // rndTester(LRU, 'LRU', limit, task, loop);
-rndTester(ADV, 'ADV', limit, task, loop);
+// rndTester(ADV, 'ADV', limit, task, loop);

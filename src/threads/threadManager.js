@@ -132,6 +132,7 @@ class ThreadWorker extends EventEmitter {
 		});
 	}
 	get count () {
+		if (this.stat === ThreadWorker.Stat.DEAD) return 0;
 		return this.tasks.size;
 	}
 	get id () {
@@ -251,6 +252,23 @@ const TM = {
 			var t = 0;
 			pool.forEach(th => t += th.count);
 			return t;
+		},
+		refresh: () => {
+			var indexes = [];
+			pool.forEach((th, i) => {
+				if (th.stat !== ThradWorker.Stat.BUSY) indexes.push(i);
+				if (th.stat === ThradWorker.Stat.IDLE) th.suicide();
+			});
+			indexes.reverse().forEach(i => pool.splice(i, 1));
+			var len = indexes.length;
+			pool.concat(Array.generate(len, () => new ThreadWorker));
+		},
+		refreshAll: () => {
+			var size = pool.length;
+			pool.forEach(th => {
+				if (th.stat !== ThradWorker.Stat.DEAD) th.suicide();
+			});
+			pool = Array.generate(size, () => new ThreadWorker());
 		},
 		killAll: () => {
 			pool.forEach(th => th.suicide());

@@ -11,7 +11,7 @@ const test1 = promisify(async (pool, next) => {
 	var tasks = total = 50;
 	for (let i = 0; i < total; i ++) {
 		pool.request('test', 'No. ' + (i + 1) + ' voting...', (result, err) => {
-			console.log('>', result);
+			console.log('Get Result from thread: ' + result);
 			tasks --;
 			if (tasks === 0) {
 				next();
@@ -33,3 +33,8 @@ const test1 = promisify(async (pool, next) => {
 	console.log('step 4');
 	ThreadPool.killAll();
 })();
+
+setTimeout(() => {
+	// ThreadPool.refresh('~/test/worker1.js');
+	ThreadPool.refreshAll('~/test/worker1.js');
+}, 1000);

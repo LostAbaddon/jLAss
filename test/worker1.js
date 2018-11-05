@@ -1,4 +1,4 @@
-// console.log('Thread-' + thread.threadId + ' is online!!!');
+console.log('Thread-' + thread.threadId + ' is online!!!');
 
 register('init', (data, event) => {
 	console.log('Thread Worker Launched!!!');

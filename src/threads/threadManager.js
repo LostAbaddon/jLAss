@@ -93,7 +93,10 @@ class ThreadWorker extends EventEmitter {
 			});
 			this.once('reply:' + eventTag, (data, event) => {
 				this.tasks.delete(eventTag);
-				if (this.tasks.size === 0) this.stat = ThreadWorker.Stat.IDLE;
+				if (this.tasks.size === 0) {
+					this.stat = ThreadWorker.Stat.IDLE;
+					setImmediate(() => this.emit("allJobsDone"));
+				}
 				if (!!callback) callback(data, null);
 				res(data);
 			});
@@ -119,7 +122,10 @@ class ThreadWorker extends EventEmitter {
 			});
 			this.once('reply:' + eventTag, (data, event) => {
 				this.tasks.delete(eventTag);
-				if (this.tasks.size === 0) this.stat = ThreadWorker.Stat.IDLE;
+				if (this.tasks.size === 0) {
+					this.stat = ThreadWorker.Stat.IDLE;
+					setImmediate(() => this.emit("allJobsDone"));
+				}
 				if (!!data.err) {
 					if (!!callback) callback(null, data.err);
 					rej(data.err);
@@ -157,8 +163,12 @@ var pool = null;
 
 const choiseThread = () => {
 	pool.sort((ta, tb) => {
+		if (ta.stat !== ThreadWorker.Stat.DEAD && tb.stat === ThreadWorker.Stat.DEAD) return -1;
+		if (tb.stat !== ThreadWorker.Stat.DEAD && ta.stat === ThreadWorker.Stat.DEAD) return 1;
+
 		if (ta.stat === ThreadWorker.Stat.IDLE && tb.stat === ThreadWorker.Stat.BUSY) return -1;
 		if (tb.stat === ThreadWorker.Stat.IDLE && ta.stat === ThreadWorker.Stat.BUSY) return 1;
+
 		return ta.count - tb.count;
 	});
 	return pool[0];
@@ -253,22 +263,35 @@ const TM = {
 			pool.forEach(th => t += th.count);
 			return t;
 		},
-		refresh: () => {
+		refresh: files => {
 			var indexes = [];
 			pool.forEach((th, i) => {
-				if (th.stat !== ThradWorker.Stat.BUSY) indexes.push(i);
-				if (th.stat === ThradWorker.Stat.IDLE) th.suicide();
+				if (th.stat !== ThreadWorker.Stat.BUSY) indexes.push(i);
+				if (th.stat === ThreadWorker.Stat.IDLE) th.suicide();
 			});
+			console.log(pool.map((th, i) => [th.id, i, th.stat]));
+			console.log(indexes);
 			indexes.reverse().forEach(i => pool.splice(i, 1));
 			var len = indexes.length;
-			pool.concat(Array.generate(len, () => new ThreadWorker));
+			console.log(len);
+			pool = pool.concat(Array.generate(len, () => {
+				var worker = new ThreadWorker();
+				worker.load(files);
+				return worker;
+			}));
+			console.log(pool.map((th, i) => [th.id, i, th.stat]));
 		},
-		refreshAll: () => {
+		refreshAll: files => {
 			var size = pool.length;
 			pool.forEach(th => {
-				if (th.stat !== ThradWorker.Stat.DEAD) th.suicide();
+				if (th.stat === ThreadWorker.Stat.IDLE) th.suicide();
+				else if (th.stat === ThreadWorker.Stat.BUSY) th.once('allJobsDone', () => setImmediate(() => th.suicide()));
 			});
-			pool = Array.generate(size, () => new ThreadWorker());
+			pool = Array.generate(size, () => {
+				var worker = new ThreadWorker();
+				worker.load(files);
+				return worker;
+			});
 		},
 		killAll: () => {
 			pool.forEach(th => th.suicide());

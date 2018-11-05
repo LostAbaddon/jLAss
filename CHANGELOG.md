@@ -64,3 +64,5 @@ Start to build my personal js-core lib.
 ### 2018.11.05
 
 -	pump 化函数提供 dump 直接输出的功能
+-	线程池管理增加更新闲置线程与更新所有线程的功能（用于释放线程中加载太多的文件而产生的内存压力）<br>
+-	增加基于 Map 的 LRUCache

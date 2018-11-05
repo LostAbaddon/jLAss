@@ -1,8 +1,8 @@
 {
 	"name": "jLAss",
-	"version": "0.1",
-	"description": "Personal Javascript Core Lib",
-	"leadMaintainer": "LostAbaddon <lostabaddon@gmail.com>",
+	"version": "0.1.2",
+	"description": "Personal Javascript Core Lib, includes thread manager; promisify, once, pump and stack function; fs utils; Object, Array, Function, Class, String, Symbol and Time extends; CLI and CLP; and some useful utils and tools.",
+	"author": "LostAbaddon <lostabaddon@gmail.com>",
 	"main": "src/index.js",
 	"engines": {
 		"node": ">=10.0.0"
@@ -10,7 +10,7 @@
 	"keywords": [
 		"JS", "Javascript"
 	],
-	"license": "GPL 3.0",
+	"license": "GPL-3.0",
 	"homepage": "https://github.com/LostAbaddon/jLAss",
 	"contributors": [
 		"LostAbaddon <lostabaddon@gmail.com>"

@@ -6,8 +6,6 @@
  * Date:	2018.11.02
  */
 
-require('./promisify');
-
 if (!!global.setTimeout) { // For Process instead of Thread
 	global.setImmediate = global.setImmediate || function (callback) { setTimeout(callback, 0); };
 	global.nextTick = !!process ? process.nextTick || global.setImmediate : global.setImmediate;

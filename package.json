@@ -7,7 +7,7 @@
 	},
 	"description": "Personal Javascript Core Lib, includes thread manager; promisify, once, pump and stack function; fs utils; Object, Array, Function, Class, String, Symbol and Time extends; CLI and CLP; and some useful utils and tools.",
 	"keywords": [
-		"JS", "Javascript"
+		"JS", "Javascript", "JS-Extend", "JS-ThreadPool", "JS-ThreadManager"
 	],
 	"license": "GPL-3.0",
 	"homepage": "https://github.com/LostAbaddon/jLAss",

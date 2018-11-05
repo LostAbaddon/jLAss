@@ -14,7 +14,7 @@ My Personal Javascript Core Lib
 -	System Monitor Utils
 -	FileSystem Utils
 -	Math(TBD)
--	Threads(TBD)
+-	Threads
 -	Sync and Async Events
 -	CommandLine Tools
 -	Other Utils
@@ -55,9 +55,10 @@ We can use "global" in both browser and node (b/n)
 -	Version<br>
 	Version class for parsing version strings.
 -	getLoadPath<br>
-	获取绝对路径：“./”开始则从 jLAss 包位置开始加载，“~/”开始则从 `process.cwd()` 位置开始加载
+	Parse filepath to a loadable path.<br>
+	If start with `./` then the root path is jLass path; if start with `~/` then the root path will be `process.cwd()`.
 -	setLoadRoot<br>
-	指定 getLoadPath 开始的根路径（默认为 jLAss 包位置）
+	Change the default root path for `~/`
 
 ### Promisify
 

@@ -22,7 +22,7 @@ class LRUCache {
 		var v = this._cache.get(k);
 		if (v !== undefined) return v;
 		v = this._datastore.get(k);
-		if (v !== undefined) this._update(k, v)
+		if (v !== undefined) this._update(k, v);
 		return v;
 	}
 	_update (k, v) {

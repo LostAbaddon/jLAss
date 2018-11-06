@@ -15,27 +15,24 @@ class LRUCache {
 	}
 	set (k, v) {
 		const p = this._cache.get(k);
-		if (p === undefined) {
-			this._update();
-		}
-		this._cache.set(k, v);
+		if (p === undefined) this._update(k, v);
+		else this._cache.set(k, v);
 	}
 	get (k) {
 		var v = this._cache.get(k);
 		if (v !== undefined) return v;
 		v = this._datastore.get(k);
-		if (v !== undefined) {
-			this._cache.set(k, v);
-			this._update()
-		}
+		if (v !== undefined) this._update(k, v)
 		return v;
 	}
-	_update () {
+	_update (k, v) {
 		this._length ++;
-		if (this._length < this._limit) return;
-		this._datastore = this._cache;
-		this._cache = new Map();
-		this._length = 0;
+		if (this._length >= this._limit) {
+			this._datastore = this._cache;
+			this._cache = new Map();
+			this._length = 0;
+		}
+		this._cache.set(k, v);
 	}
 }
 

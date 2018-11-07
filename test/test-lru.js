@@ -1,6 +1,7 @@
 require('../src');
 
 const LRU = require('../src/datastore/lrucache');
+const UFCache = require('../src/datastore/ufcache');
 
 class MEM {
 	constructor () {
@@ -26,7 +27,7 @@ class MAP {
 	}
 }
 
-class ADV {
+class TST {
 	constructor (limit=100) {
 		this._datastore = Object.create(null);
 		this._index = 0;
@@ -166,11 +167,12 @@ const rndTester = (ds, label, limit=100, task=1000, loop=100) => {
 	for (let t = 0; t < loop; t ++) {
 		for (let i = 0; i < 10000; i ++) {
 			let j = Math.floor(Math.random() * task);
-			let k = 'K-' + j;
+			let k = 'K-' + j, v = 'V: ' + j;
 			let vv = tester.get(k);
-			v = ' | V: ' + (Math.floor(Math.random() * task) + vv ? vv.length : 0);
+			if (vv !== undefined && v !== vv) console.log(k, v, vv);
 			j = Math.floor(Math.random() * task);
 			k = 'K-' + j;
+			v = 'V: ' + j;
 			tester.set(k, v);
 		}
 	}
@@ -188,11 +190,15 @@ const rndTester = (ds, label, limit=100, task=1000, loop=100) => {
 // tester(MEM, 'MEM', limit);
 // tester(MAP, 'Map', limit);
 // tester(LRU, 'LRU', limit);
-// tester(ADV, 'ADV', limit);
+// tester(TST, 'TST', limit);
 
 var limit = 100, task = 1000000, loop = 100;
+// var limit = 100, task = 2000, loop = 100;
 
 // rndTester(MEM, 'MEM', limit, task, loop);
 // rndTester(MAP, 'Map', limit, task, loop);
-rndTester(LRU, 'LRU', limit, task, loop);
-// rndTester(ADV, 'ADV', limit, task, loop);
+// rndTester(LRU, 'LRU', limit, task, loop);
+// rndTester(LRU.withDatastore, 'LRUWDS', limit, task, loop);
+// rndTester(TST, 'TST', limit, task, loop);
+rndTester(UFCache, 'UFCache', limit, task, loop);
+rndTester(UFCache.withDatastore, 'UFCacheWDS', limit, task, loop);

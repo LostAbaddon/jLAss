@@ -2,8 +2,8 @@
  * Name:	Array Utils
  * Desc:    Array 类拓展工具
  * Author:	LostAbaddon
- * Version:	0.0.1
- * Date:	2017.11.09
+ * Version:	0.0.2
+ * Date:	2018.11.07
  */
 
 Array.prototype.copy = function () {
@@ -47,6 +47,15 @@ Array.prototype.translate = function (offset) {
 	return c;
 };
 Array.prototype.has = function (obj) { return this.indexOf(obj) >= 0};
+Array.prototype.query = function (fun) {
+	var index = -1;
+	this.some((d, i) => {
+		const has = !!fun(d);
+		if (has) index = i;
+		return has;
+	});
+	return index;
+};
 Object.defineProperty(Array.prototype, 'first', {
 	get () {
 		return this[0];
@@ -66,6 +75,7 @@ Object.defineProperty(Array.prototype, 'remove', { enumerable: false });
 Object.defineProperty(Array.prototype, 'randomize', { enumerable: false });
 Object.defineProperty(Array.prototype, 'translate', { enumerable: false });
 Object.defineProperty(Array.prototype, 'has', { enumerable: false });
+Object.defineProperty(Array.prototype, 'query', { enumerable: false });
 Array.is = obj => obj instanceof Array;
 Array.generate = (total, generator = i => i) => {
 	var result = [];

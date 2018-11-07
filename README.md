@@ -13,6 +13,7 @@ My Personal Javascript Core Lib
 -	Log Utils
 -	System Monitor Utils
 -	FileSystem Utils
+-	Datastore and Cache
 -	Math(TBD)
 -	Threads
 -	Sync and Async Events
@@ -112,6 +113,7 @@ promisify(fn(..., res)).timeout([timeout], [callback]);
 -	array.remove
 -	array.translate
 -	array.has
+-	array.query
 -	array:first
 -	array:last
 -	Array.is
@@ -233,6 +235,13 @@ cmdLauncher.launch();
 	-	Use `suicide` to tell main thread to kill current thread worker
 -	ThreadPool<br>
 	A thread pool which can choise thread automatically.
+
+## Datastore and Cache
+
+-	LRUCache & LRUCache.withDatastore<br>
+	Latest Recently Use Cache
+-	UFCache & UFCache.withDatastore<br>
+	Usage Frequency Cache
 
 ## Utils
 

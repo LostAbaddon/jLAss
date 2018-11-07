@@ -66,3 +66,8 @@ Start to build my personal js-core lib.
 -	pump 化函数提供 dump 直接输出的功能
 -	线程池管理增加更新闲置线程与更新所有线程的功能（用于释放线程中加载太多的文件而产生的内存压力）<br>
 -	增加基于 Map 的 LRUCache
+
+### 2018.11.07
+
+-	Array 增加 query 命令，返回符合条件的第一个元素的指标：`index = array.query(fun)`
+-	增加基于带 Datastore 的 Cache 模块：LRUCache.withDatastore 和 UFCache.withDatastore

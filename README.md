@@ -4,7 +4,7 @@ My Personal Javascript Core Lib
 
 > Author: [LostAbaddon](mailto:lostabaddon@gmail.com)
 
-> Version: 0.1.3
+> Version: 0.1.4
 
 ## Includes
 
@@ -218,12 +218,16 @@ cmdLauncher.launch();
 	Worker will load a list of js core lib.
 -	Utils.Threads.create(filelist, init_data)<br>
 	Create a thread and load filelist, start with init_data
+-	Utils.Threads.evaluate(fun, data)<br>
+	Create a thread and run the given function with given data.
 -	Worker<br>
 	Wrapped ThreadWorker.<br>
-	-	`worker.send(msg)` to send message to thread;<br>
-	-	`worker.request(msg, data)` to call thread worker with message `{ event, data }`, return a promise object;<br>
-	-	`worker.suicide()` to kill the thread worker;<br>
-	-	`count` is the running task count;<br>
+	-	`worker.send(msg)` to send message to thread;
+	-	`worker.load(files)` to load files;
+	-	`worker.request(msg, data)` to call thread worker with message `{ event, data }`, return a promise object;
+	-	`worker.evaluate(fun, data)` to call thread worker to run the given function with given data;
+	-	`worker.suicide()` to kill the thread worker;
+	-	`count` is the running task count;
 -	ThreadWorker.Stat<br>
 	Status of worker: `IDLE`, `BUSY`, `DEAD`
 -	ThreadWorker<br>
@@ -235,6 +239,22 @@ cmdLauncher.launch();
 	-	Use `suicide` to tell main thread to kill current thread worker
 -	ThreadPool<br>
 	A thread pool which can choise thread automatically.
+-	ThreadPool.create(size, files, data)<br>
+	Create a batch of threads with init files and data.
+-	ThreadPool.load(files)<br>
+	Make all threads load files.
+-	ThreadPool.request(event, data, cb)<br>
+	Choose a free thread or a thread with least tasks to run the given event;
+-	ThreadPool.requestAll(event, data, cb)<br>
+	Make all thread to do the job.
+-	ThreadPool.evaluate(fun, data, cb)<br>
+	Choose a free thread or a thread with least tasks to do the evaluation;
+-	ThreadPool.refresh([files])<br>
+	Kill the free threads and reload it, with the files set in `create` or the given files;
+-	ThreadPool.refreshAll([files])<br>
+	Kill the free threads, and when the busy threads finish all their jobs then suicide, and reload all the threads with the files set in `create` or the given files;
+-	ThreadPool.killAll()<br>
+	Kill all the threads and release the pool.
 
 ## Datastore and Cache
 

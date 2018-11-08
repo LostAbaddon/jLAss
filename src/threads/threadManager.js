@@ -1,16 +1,14 @@
 /**
  * Name:	Thread Manager
- * Desc:    辅助工具
+ * Desc:    线程池管理工具
  * Author:	LostAbaddon
- * Version:	0.0.1
- * Date:	2018.11.04
+ * Version:	0.0.2
+ * Date:	2018.11.08
  */
 
 if (!global._canThread) return;
 
-const {
-	Worker, MessageChannel, MessagePort, isMainThread, parentPort
-} = require('worker_threads');
+const { Worker } = require('worker_threads');
 
 const EventEmitter = require('events');
 
@@ -160,6 +158,10 @@ class ThreadWorker extends EventEmitter {
 ThreadWorker.Stat = Symbol.set(['IDLE', 'BUSY', 'DEAD']);
 
 var pool = null;
+const pool_default = {
+	files: undefined,
+	data: undefined
+};
 
 const choiseThread = () => {
 	pool.sort((ta, tb) => {
@@ -198,10 +200,12 @@ const TM = {
 	}),
 	Pool: {
 		size: require('os').cpus().length,
-		create: (size=TM.Pool.size) => {
+		create: (size=TM.Pool.size, files, data) => {
 			if (!!pool) return TM.Pool;
+			if (files !== undefined) pool_default.files = files;
+			if (data !== undefined) pool_default.data = data;
 			if (isNaN(size) || size <= 0) size = TM.Pool.size;
-			pool = Array.generate(size, () => new ThreadWorker());
+			pool = Array.generate(size, () => new ThreadWorker(files, data));
 			return TM.Pool;
 		},
 		load: files => {
@@ -269,17 +273,13 @@ const TM = {
 				if (th.stat !== ThreadWorker.Stat.BUSY) indexes.push(i);
 				if (th.stat === ThreadWorker.Stat.IDLE) th.suicide();
 			});
-			console.log(pool.map((th, i) => [th.id, i, th.stat]));
-			console.log(indexes);
 			indexes.reverse().forEach(i => pool.splice(i, 1));
 			var len = indexes.length;
-			console.log(len);
 			pool = pool.concat(Array.generate(len, () => {
-				var worker = new ThreadWorker();
-				worker.load(files);
+				var worker = new ThreadWorker(pool_default.files, pool_default.data);
+				if (!!files) worker.load(files);
 				return worker;
 			}));
-			console.log(pool.map((th, i) => [th.id, i, th.stat]));
 		},
 		refreshAll: files => {
 			var size = pool.length;
@@ -288,13 +288,14 @@ const TM = {
 				else if (th.stat === ThreadWorker.Stat.BUSY) th.once('allJobsDone', () => setImmediate(() => th.suicide()));
 			});
 			pool = Array.generate(size, () => {
-				var worker = new ThreadWorker();
-				worker.load(files);
+				var worker = new ThreadWorker(pool_default.files, pool_default.data);
+				if (!!files) worker.load(files);
 				return worker;
 			});
 		},
 		killAll: () => {
 			pool.forEach(th => th.suicide());
+			pool = null;
 		}
 	}
 };

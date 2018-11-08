@@ -143,7 +143,7 @@ global.promisify = Function.promisify = promisify;
  * oncefun.refresh可重新执行
  */
 
-global.oncilize = fn => {
+global.oncilize = Function.oncilize = fn => {
 	var called = false, value, ofn;
 	if (fn._promised) {
 		ofn = (...args) => new Promise(async (res, rej) => {
@@ -174,7 +174,7 @@ global.oncilize = fn => {
  * pumpfun.dump可立即执行
  */
 
-global.pumplize = (fn, cb, last_only=true) => {
+global.pumplize = Function.pumplize = (fn, cb, last_only=true) => {
 	var stack = [], start_time = null, timeout = 100, timer = null;
 	var done = () => {
 		start_time = null;

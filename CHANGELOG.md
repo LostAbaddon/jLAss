@@ -81,3 +81,4 @@ Start to build my personal js-core lib.
 -	ThreadManager 的 pool 增加默认参数记录功能
 -	ThreadManager 的 pool 在 killAll 后可重新 create
 -	删除无用的 console.log
+-	LRUCache 和 UFCache 增加 del、has、clear 功能

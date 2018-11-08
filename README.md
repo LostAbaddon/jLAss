@@ -6,6 +6,8 @@ My Personal Javascript Core Lib
 
 > Version: 0.1.4
 
+> NodeJS Version: >= 10.0.0
+
 ## Includes
 
 -	Module Manager for b/n

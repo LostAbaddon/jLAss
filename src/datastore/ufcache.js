@@ -2,8 +2,8 @@
  * Name:	Usage Frequency Cache
  * Desc:    基于Map的高频数据缓存
  * Author:	LostAbaddon
- * Version:	0.0.1
- * Date:	2018.11.06
+ * Version:	0.0.2
+ * Date:	2018.11.07
  */
 
 const config = {
@@ -46,12 +46,22 @@ class UFCache {
 		this._update();
 		return v[0];
 	}
+	del (k) {
+		this._cache.delete(k);
+	}
+	has (k) {
+		return this._cache.has(k);
+	}
+	clear () {
+		this._cache = new Map();
+		this._time = 0;
+	}
 	_update (k, v) {
 		this._time ++;
 		if (this._time <= this.frequency) return;
 		this._time = 0;
+		if (this._cache.size <= this.size) return;
 		var keys = Array.from(this._cache.keys());
-		if (keys.length <= this.size) return;
 		var remove = [];
 		keys.forEach(k => {
 			let v = this._cache.get(k);
@@ -87,6 +97,10 @@ class UFCacheWithDatastore extends UFCache {
 			v = this._ds.get(k);
 			if (v !== undefined) this._update(k, v);
 		}
+	}
+	del (k) {
+		UFCache.prototype.del.call(this, k);
+		this._ds.delete(k);
 	}
 }
 

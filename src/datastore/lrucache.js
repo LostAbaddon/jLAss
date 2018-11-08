@@ -2,8 +2,8 @@
  * Name:	LRU Cache
  * Desc:    基于Map的最近使用缓存
  * Author:	LostAbaddon
- * Version:	0.0.1
- * Date:	2018.11.05
+ * Version:	0.0.3
+ * Date:	2018.11.07
  */
 
 class LRUCache {
@@ -24,6 +24,20 @@ class LRUCache {
 		v = this._secondary.get(k);
 		if (v !== undefined) this._update(k, v);
 		return v;
+	}
+	del (k) {
+		const p = this._cache.get(k);
+		if (p !== undefined) this._length --;
+		this._cache.delete(k);
+		this._secondary.delete(k);
+	}
+	has (k) {
+		return this._cache.has(k) || this._secondary.has(k);
+	}
+	clear () {
+		this._cache = new Map();
+		this._secondary = new Map();
+		this._length = 0;
 	}
 	_update (k, v) {
 		this._length ++;
@@ -52,6 +66,10 @@ class LRUCacheWithDatastore extends LRUCache {
 			if (v !== undefined) this._update(k, v);
 		}
 		return v;
+	}
+	del (k) {
+		LRUCache.prototype.del.call(this, k);
+		this._ds.delete(k);
 	}
 }
 

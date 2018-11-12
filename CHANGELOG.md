@@ -82,3 +82,13 @@ Start to build my personal js-core lib.
 -	ThreadManager 的 pool 在 killAll 后可重新 create
 -	删除无用的 console.log
 -	LRUCache 和 UFCache 增加 del、has、clear 功能
+
+## 0.1.5
+
+### 2018.11.09
+
+-	增加通道channel<br>
+	生产者：`channel.push(data)`或阻塞式：`await channel.push(data)`<br>
+	消费者：`var data = await channel.pull()`
+	关闭：`channel.close()
+	强制关闭：`channel.kill()`

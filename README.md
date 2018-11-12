@@ -4,7 +4,7 @@ My Personal Javascript Core Lib
 
 > Author: [LostAbaddon](mailto:lostabaddon@gmail.com)
 
-> Version: 0.1.4
+> Version: 0.1.5
 
 > NodeJS Version: >= 10.0.0
 
@@ -151,6 +151,7 @@ Some utils for event-related functions.
 -	EventManager for both sync and async callbacks
 -	Broadcast
 -	Event Pipe with and without Barrier
+-	Channel
 
 ## CommandLine
 

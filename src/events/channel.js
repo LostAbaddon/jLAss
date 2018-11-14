@@ -37,7 +37,7 @@ class Channel {
 			}
 		});
 	}
-	pull (data) {
+	pull () {
 		return new Promise((res, rej) => {
 			if (!this._running) {
 				res();

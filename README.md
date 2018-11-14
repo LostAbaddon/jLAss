@@ -152,6 +152,7 @@ Some utils for event-related functions.
 -	Broadcast
 -	Event Pipe with and without Barrier
 -	Channel
+-	Tunnel: Thread-crossing Channel
 
 ## CommandLine
 

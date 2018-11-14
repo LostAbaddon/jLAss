@@ -2,15 +2,15 @@
  * Name:	Thread Manager
  * Desc:    线程池管理工具
  * Author:	LostAbaddon
- * Version:	0.0.2
- * Date:	2018.11.08
+ * Version:	0.0.3
+ * Date:	2018.11.14
  */
 
 if (!global._canThread) return;
 
 const { Worker } = require('worker_threads');
-
 const EventEmitter = require('events');
+const TunnelManager = require('./threadTunnel');
 
 class ThreadWorker extends EventEmitter {
 	constructor (files, data) {
@@ -42,6 +42,20 @@ class ThreadWorker extends EventEmitter {
 			this.emit(tag, data.data, data);
 		});
 		this.on('suicide', this.suicide);
+
+		this._tm = new TunnelManager((...args) => {this.request(...args)});
+		this.on('__tunnel__', msg => {
+			if (msg.event === 'pull') {
+				this._tm.gotPull(msg.id);
+			}
+			else if (msg.event === 'nil') {
+				this._tm.gotNil(msg.id);
+			}
+			else if (msg.event === 'data') {
+				this._tm.gotData(msg.id, msg.data);
+			}
+			else console.log('master got wrong msg >>\n', msg);
+		});
 	}
 	load (files) {
 		if (this.stat === ThreadWorker.Stat.DEAD) return;
@@ -153,6 +167,9 @@ class ThreadWorker extends EventEmitter {
 			if (Function.is(cbs)) this.removeListener(key, cbs);
 			else cbs.forEach(cb => this.removeListener(key, cb));
 		}
+	}
+	getTunnel (id) {
+		return this._tm.getTunnel(id);
 	}
 }
 ThreadWorker.Stat = Symbol.set(['IDLE', 'BUSY', 'DEAD']);

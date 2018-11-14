@@ -92,3 +92,6 @@ Start to build my personal js-core lib.
 	消费者：`var data = await channel.pull()`
 	关闭：`channel.close()
 	强制关闭：`channel.kill()`
+
+### 2018.11.14
+-	增加跨线程通道tunnel

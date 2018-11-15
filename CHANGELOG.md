@@ -95,3 +95,6 @@ Start to build my personal js-core lib.
 
 ### 2018.11.14
 -	增加跨线程通道tunnel
+
+### 2018.11.15
+-	增加Channel的合并功能

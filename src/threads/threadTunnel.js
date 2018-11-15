@@ -42,6 +42,14 @@ class Tunnel {
 	get alive () {
 		return this._channel.alive
 	}
+	combine (channel) {
+		if (channel instanceof Channel) {
+			this._channel.combine(channel);
+		}
+		else if (channel instanceof Tunnel) {
+			this._channel.combine(channel._channel);
+		}
+	}
 }
 
 class TunnelManager {

@@ -10,10 +10,6 @@ const MasterTask = async () => {
 	const worker = ThreadManager.create(__filename);
 	const tunnel = worker.getTunnel();
 
-	worker.on('_tunnel', (...args) => {
-		console.log(args);
-	})
-
 	console.log("I'm the master!");
 
 	await wait(1000);
@@ -26,12 +22,15 @@ const MasterTask = async () => {
 	console.log('Got Msg from Slaver:', msg);
 
 	for (let i = 1; i <= 10; i ++) tunnel.push('x-' + i);
+
+	await wait(900);
+	msg = await tunnel.pull();
+	console.log('M: ' + msg);
 };
 
 const SlaverTask = async () => {
 	var tid;
 	register('tunnel', (msg, event) => { tid = msg.id });
-	register('_tunnel', (msg, event) => console.log(msg));
 
 	await wait(1000);
 	const tunnel = TunnelManager.getTunnel(tid);
@@ -50,6 +49,12 @@ const SlaverTask = async () => {
 		let d = await tunnel.pull();
 		console.log('Nani: ' + d);
 	}
+	tunnel.close();
+
+	await wait(1000);
+	tunnel.push('abc');
+
+	await wait(1000);
 	suicide();
 };
 

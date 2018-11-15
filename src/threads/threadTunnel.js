@@ -34,8 +34,10 @@ class Tunnel {
 		});
 	}
 	kill () {
+		this._mgr.killTunnel(this.id);
 	}
 	close () {
+		this._mgr.closeTunnel(this.id);
 	}
 	get alive () {
 		return this._channel.alive
@@ -88,6 +90,22 @@ class TunnelManager {
 		var tunnel = this._pool.get(tid);
 		if (!tunnel) return;
 		tunnel.push(data);
+	}
+	closeTunnel (tid, one_side=false) {
+		var tunnel = this._pool.get(tid);
+		if (!!tunnel) tunnel._channel.close();
+		if (!one_side) this._sender('__tunnel__', {
+			event: 'close',
+			id: tid
+		});
+	}
+	killTunnel (tid, one_side=false) {
+		var tunnel = this._pool.get(tid);
+		if (!!tunnel) tunnel._channel.kill();
+		if (!one_side) this._sender('__tunnel__', {
+			event: 'kill',
+			id: tid
+		});
 	}
 	closeAll () {
 	}

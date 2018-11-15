@@ -54,6 +54,12 @@ class ThreadWorker extends EventEmitter {
 			else if (msg.event === 'data') {
 				this._tm.gotData(msg.id, msg.data);
 			}
+			else if (msg.event === 'close') {
+				this._tm.closeTunnel(msg.id, true);
+			}
+			else if (msg.event === 'kill') {
+				this._tm.killTunnel(msg.id, true);
+			}
 			else console.log('master got wrong msg >>\n', msg);
 		});
 	}

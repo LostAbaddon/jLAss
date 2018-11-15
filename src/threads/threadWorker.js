@@ -106,6 +106,12 @@ thread.parentPort.on('message', msg => {
 		else if (msg.data.event === 'data') {
 			global.TunnelManager.gotData(msg.data.id, msg.data.data);
 		}
+		else if (msg.event === 'close') {
+			global.TunnelManager.closeTunnel(msg.data.id, true);
+		}
+		else if (msg.event === 'kill') {
+			global.TunnelManager.killTunnel(msg.data.id, true);
+		}
 		else console.log('slaver got wrong msg >>\n', msg);
 		return;
 	}

@@ -229,6 +229,12 @@ const rndTester = (ds, label, limit=100, task=1000, loop=100) => {
 
 	var start, end, tester;
 	tester = new ds(limit);
+	if (tester.withWeight) {
+		tester.withWeight(v => {
+			return v.length;
+		})
+	}
+
 	var v = 'V: ' + Math.floor(Math.random() * task);
 
 	start = Date.now();
@@ -269,7 +275,7 @@ var limit = 100, task = 1000000, loop = 100;
 // rndTester(MAP, 'Map', limit, task, loop);
 // rndTester(LRU, 'LRU', limit, task, loop);
 // rndTester(LRU.withDatastore, 'LRUWDS', limit, task, loop);
-rndTester(LRU2, 'LRU2', limit, task, loop);
-// rndTester(UFCache, 'UFCache', limit, task, loop);
+// rndTester(LRU2, 'LRU2', limit, task, loop);
+rndTester(UFCache, 'UFCache', limit, task, loop);
 // rndTester(UFCache.withDatastore, 'UFCacheWDS', limit, task, loop);
 // rndTester(TST, 'TST', limit, task, loop);

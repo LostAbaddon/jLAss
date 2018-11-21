@@ -6,26 +6,29 @@
  * Date:	2018.11.07
  */
 
-const config = {
+const Config = {
 	frequency: 50,
 	delay: 0.9,
 	size: 100
 };
 
+const FunWeightOne = () => 1;
+
 class UFCache {
-	constructor (frequency=config.frequency, delay=config.delay, size=config.size) {
+	constructor (frequency=Config.frequency, delay=Config.delay, size=Config.size) {
 		if (isNaN(frequency)) {
-			this.frequency = frequency.frequency * 1 || config.frequency;
-			this.delay = frequency.delay * 1 || config.delay;
-			this.size = frequency.size * 1 || config.size;
+			this.frequency = frequency.frequency * 1 || Config.frequency;
+			this.delay = frequency.delay * 1 || Config.delay;
+			this.size = frequency.size * 1 || Config.size;
 		}
 		else {
-			this.frequency = frequency * 1 || config.frequency;
-			this.delay = delay * 1 || config.delay;
-			this.size = size * 1 || config.size;
+			this.frequency = frequency * 1 || Config.frequency;
+			this.delay = delay * 1 || Config.delay;
+			this.size = size * 1 || Config.size;
 		}
 		this._cache = new Map();
 		this._time = 0;
+		this._weightFun = FunWeightOne;
 	}
 	set (k, v) {
 		var p = this._cache.get(k);
@@ -36,13 +39,13 @@ class UFCache {
 		else {
 			p[0] = v;
 		}
-		p[1] ++;
+		p[1] += this._weightFun(v);
 		this._update();
 	}
 	get (k) {
 		var v = this._cache.get(k);
 		if (v === undefined) return v;
-		v[1] ++;
+		v[1] += this._weightFun(v[0]);
 		this._update();
 		return v[0];
 	}
@@ -73,6 +76,15 @@ class UFCache {
 				v[1] = f;
 			}
 		});
+	}
+	withWeight (weightFun) {
+		this._weightFun = weightFun;
+	}
+	static changeFrequency (f) {
+		if (!isNaN(f) && f > 0) Config.frequency = f;
+	}
+	static changeDelay (d) {
+		if (!isNaN(d) && d > 0 && d < 1) Config.delay = d;
 	}
 }
 

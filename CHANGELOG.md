@@ -64,7 +64,7 @@ Start to build my personal js-core lib.
 ### 2018.11.05
 
 -	pump 化函数提供 dump 直接输出的功能
--	线程池管理增加更新闲置线程与更新所有线程的功能（用于释放线程中加载太多的文件而产生的内存压力）<br>
+-	线程池管理增加更新闲置线程与更新所有线程的功能（用于释放线程中加载太多的文件而产生的内存压力）
 -	增加基于 Map 的 LRUCache
 
 ## 0.1.3
@@ -89,12 +89,20 @@ Start to build my personal js-core lib.
 
 -	增加通道channel<br>
 	生产者：`channel.push(data)`或阻塞式：`await channel.push(data)`<br>
-	消费者：`var data = await channel.pull()`
-	关闭：`channel.close()
+	消费者：`var data = await channel.pull()`<br>
+	关闭：`channel.close()`<br>
 	强制关闭：`channel.kill()`
 
 ### 2018.11.14
+
 -	增加跨线程通道tunnel
 
 ### 2018.11.15
+
 -	增加Channel和Tunnel的合并功能
+
+## 0.1.6
+
+### 2018.11.22
+
+-	UFCache增加Weight函数

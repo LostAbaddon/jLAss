@@ -1,6 +1,6 @@
 {
 	"name": "jlass",
-	"version": "0.1.5",
+	"version": "1.0.0",
 	"author": {
 		"name": "LostAbaddon",
 		"email": "LostAbaddon@gmail.com"
@@ -17,7 +17,7 @@
 	},
 	"main": "src/index.js",
 	"engines": {
-		"node": ">=10.0.0"
+		"node": ">=14.0.0"
 	},
 	"contributors": [
 		"LostAbaddon <lostabaddon@gmail.com>"

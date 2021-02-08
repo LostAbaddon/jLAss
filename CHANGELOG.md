@@ -101,3 +101,4 @@ Start to build my personal js-core lib.
 
 ### 2021.02.08
 -	用实际使用的新库来替代原有的库（改动太大，懒得样样都记录了……）
+-	增加批量加载 jLAss 内模块组的函数 loadjLAssModule

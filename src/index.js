@@ -45,3 +45,5 @@ if (!global.noEventModules) {
 }
 
 require('./moduleManager');
+
+global.loadjLAssModule = mod => {loadall(__dirname, "./" + mod)};

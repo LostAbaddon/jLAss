@@ -1,6 +1,6 @@
 # jLAss
 
--	Version: 1.0.0
+-	Version: 1.0.1
 -	Author: [LostAbaddon](mailto:lostabaddon@gmail.com)
 -	NodeJS Version: >= 14.0.0
 

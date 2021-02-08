@@ -4,39 +4,19 @@
  * Author:	LostAbaddon
  * Version:	0.0.2
  * Date:	2018.11.14
+ * 备注：未来可以用VM来取代eval
  */
-
-global._ = (path, module) => {
-	path = path.split(/[\/\\,\.\:;]/).map(p => p.trim()).filter(p => p.length > 0);
-	if (path.length < 1) return global;
-	var node = global, last = path.pop();
-	path.forEach(p => {
-		var next = node[p];
-		if (!next) {
-			next = {};
-			node[p] = next;
-		}
-		node = next;
-	});
-	if (!!module) {
-		node[last] = module;
-	}
-	else if (!node[last]) {
-		node[last] = {};
-	}
-	return node[last];
-};
-_('Utils');
-
-// 加载工具包
-require('../utils/loadall');
-require('../extend');
-require('../utils/datetime');
-require('../utils/logger');
 
 global.thread = require('worker_threads');
 global._env = 'node';
 global._canThread = true;
+
+// 加载工具包
+require('../namespace.js');
+require('../utils/loadall');
+require('../extend');
+require('../utils/datetime');
+require('../utils/logger');
 
 // 线程事务管理器
 
@@ -56,7 +36,7 @@ global.request = (event, data) => {
 global.send = msg => global.request('message', msg);
 global.reply = (event, data) => {
 	thread.parentPort.postMessage({
-		event: 'reply:' + event.event + ':' + event.postAt,
+		eventID: event.eventID,
 		originEvent: event.event,
 		data,
 		postAt: Date.now()
@@ -124,7 +104,7 @@ if (!!thread.workerData && !!thread.workerData.scripts) {
 	if (Array.is(thread.workerData.scripts)) {
 		thread.workerData.scripts.forEach(fp => require(fp));
 	}
-	else {
+	else if (String.is(thread.workerData.scripts)) {
 		require(thread.workerData.scripts);
 	}
 }

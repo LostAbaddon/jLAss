@@ -9,7 +9,7 @@
 if (!global._canThread) return;
 
 load('./src/events/channel');
-const Channel = _('Utils.Events.Channel');
+const Channel = _('Events.Channel');
 
 class Tunnel {
 	constructor (mgr) {

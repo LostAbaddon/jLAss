@@ -23,4 +23,4 @@ ModuleManager.reload = path => {
 
 module.exports = ModuleManager;
 
-_('Utils').ModuleManager = ModuleManager;
+_('Utils.ModuleManager', ModuleManager);

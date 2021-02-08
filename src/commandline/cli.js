@@ -75,6 +75,7 @@ const CommandHistory = {
 			});
 			list = list.join('\n') + '\n';
 			fs.writeFile(process.env.PWD + CommandHistory.storage, list, { encoding: 'utf8' }, err => {
+				console.error(err);
 				res();
 			});
 		});
@@ -289,19 +290,23 @@ class CLI {
 		return this;
 	}
 	clear (dir) {
-		ReadLine.clearLine(process.stdin, dir || 0);
-		// if (process.stdin.isTTY) try {
-		// 	ReadLine.clearLine(process.stdin, dir || 0);
-		// }
-		// catch (err) {}
+		// ReadLine.clearLine(process.stdin, dir || 0);
+		if (process.stdin.isTTY) try {
+			ReadLine.clearLine(process.stdin, dir || 0);
+		}
+		catch (err) {
+			console.log(setStyle("console doesn't support clear...", "red bold"));
+		}
 		return this;
 	}
 	cursor (dx, dy) {
-		ReadLine.moveCursor(process.stdin, dx, dy);
-		// if (process.stdin.isTTY) try {
-		// 	ReadLine.moveCursor(process.stdin, dx, dy);
-		// }
-		// catch (err) {}
+		// ReadLine.moveCursor(process.stdin, dx, dy);
+		if (process.stdin.isTTY) try {
+			ReadLine.moveCursor(process.stdin, dx, dy);
+		}
+		catch (err) {
+			console.log(setStyle("console doesn't support cursor...", "red bold"));
+		}
 		return this;
 	}
 	stopInput () {
@@ -450,5 +455,4 @@ const Intereface = config => {
 Intereface.CLI = CLI;
 
 module.exports = Intereface;
-
-_('Utils.CL').CLI = Intereface;
+_('CL.CLI', Intereface);

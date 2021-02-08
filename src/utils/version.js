@@ -93,5 +93,4 @@ class Version {
 }
 
 module.exports = Version;
-
-_('Utils').Version = Version;
+_('Utils.Version', Version);

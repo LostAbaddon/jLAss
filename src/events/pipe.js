@@ -1,6 +1,6 @@
 /**
  * Name:	Aync Pipe Manager
- * Desc:    异步事件管道以及同步堡，同步垒支持优先级
+ * Desc:    异步事件管道以及同步垒，同步垒支持优先级
  * Author:	LostAbaddon
  * Version:	0.0.3
  * Date:	2017.11.16
@@ -8,7 +8,6 @@
 
 const EM = require('./eventManager');
 
-const private = new WeakMap();
 class PipeEvent extends EM.EventData {
 	constructor (pipe) {
 		super('pipeEvent', pipe);
@@ -187,6 +186,5 @@ class Barrier {
 
 exports.Pipe = Pipe;
 exports.Barrier = Barrier;
-
-_('Utils.Events').Pipe = Pipe;
-_('Utils.Events').Barrier = Barrier;
+_('Events.Pipe', Pipe);
+_('Events.Barrier', Barrier);

@@ -103,3 +103,4 @@ const setStyle = (msg, style) => {
 };
 module.exports = setStyle;
 module.exports.styles = styles;
+_('CL.SetStyle', setStyle);

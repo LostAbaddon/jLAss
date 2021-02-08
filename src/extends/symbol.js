@@ -6,8 +6,12 @@
  * Date:	2017.11.09
  */
 
-Symbol.set = Symbol.setSymbols = (host, symbols) => {
-	if (Array.is(host) && !symbols) {
+Symbol.set = Symbol.setSymbols = function (host, symbols) {
+	if (String.is(host)) {
+		symbols = [].map.call(arguments, i => i);
+		host = null;
+	}
+	else if (Array.is(host) && !symbols) {
 		symbols = host;
 		host = null;
 	}
@@ -30,6 +34,7 @@ Symbol.set = Symbol.setSymbols = (host, symbols) => {
 		});
 	});
 	host.toString = symbol => symb2name[symbol] || str2name[symbol] || 'No Such Symbol';
+	Object.defineProperty(host, 'toString', { enumerable: false });
 	return host;
 };
-Symbol.is = symbol => (symbol.__proto__ === Symbol.prototype) || (typeof symbol === 'symbol');
+Symbol.is = symbol => (Symbol.__proto__ === Symbol.prototype) || (typeof symbol === 'symbol');

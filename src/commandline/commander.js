@@ -52,7 +52,7 @@ const getCLLength = text => {
 const isDate = v => v.match(/^\d{2,4}-\d{1,2}-\d{1,2}(\/\d{1,2}:\d{1,2}(:\d{1,2}(\.\d+)?)?)?$/);
 const toRegExp = reg => new RegExp(reg);
 
-// 参数分隔，必须使用空格的时候，用“\ ”或者“[:space:]”代替
+// 参数分隔，必须使用空格的时候，用“\ ”或者“[:SPACE:]”代替
 const paramsSep = params => {
 	if (!params) return [];
 	if (params.trim().length === 0) return [];
@@ -169,55 +169,47 @@ class Params {
 				if (this.musts.indexOf(opt) < 0) this.musts.push(opt);
 			}
 			else if (tag === '[') { // 选填参数
+				let range, isArray;
 				if (opt.substring(0, 3) === '...') { // 选填参数组
 					opt = opt.substring(3, opt.length);
-					let range = opt.match(/(\(.*?\)=|\(.*?\)$)/);
-					if (!!range) {
-						range = range[0];
-						if (range.substring(range.length - 1, range.length) === '=') range = range.substring(0, range.length - 1);
-						opt = opt.replace(range, '');
-						range = toRegExp(range.substring(1, range.length - 1));
-					}
-					if (opt.indexOf('=') > 0) { // 带缺省值
-						opt = opt.split('=');
-						let defval = opt[1];
-						opt = opt[0];
-						if (this.options.indexOf(opt) < 0 && this.optionlist !== opt) {
-							if (!!range) this.valueRanges[opt] = range;
+					range = opt.match(/(\(.*?\)=|\(.*?\)$)/);
+					isArray = true;
+				}
+				else {
+					range = opt.match(/\(.*?\)[=$]/);
+					isArray = false;
+				}
+				if (!!range) {
+					range = range[0];
+					if (range.substring(range.length - 1, range.length) === '=') range = range.substring(0, range.length - 1);
+					opt = opt.replace(range, '');
+					range = toRegExp(range.substring(1, range.length - 1));
+				}
+				if (opt.indexOf('=') > 0) { // 带缺省值
+					opt = opt.split('=');
+					let defval = opt[1];
+					opt = opt[0];
+					if (this.options.indexOf(opt) < 0 && this.optionlist !== opt) {
+						if (!!range) this.valueRanges[opt] = range;
+						if (isArray) {
 							this.optionlist = opt;
 							defval = getParamValue(defval);
 							if (!(defval instanceof Array)) defval = [defval];
 							this.defaultValues[opt] = defval;
 						}
-					}
-					else { // 不带缺省值
-						if (this.options.indexOf(opt) < 0 && this.optionlist !== opt) {
-							if (!!range) this.valueRanges[opt] = range;
-							this.optionlist = opt;
-						}
-					}
-				}
-				else {
-					let range = opt.match(/\(.*?\)[=$]/);
-					if (!!range) {
-						range = range[0];
-						if (range.substring(range.length - 1, range.length) === '=') range = range.substring(0, range.length - 1);
-						opt = opt.replace(range, '');
-						range = toRegExp(range.substring(1, range.length - 1));
-					}
-					if (opt.indexOf('=') > 0) { // 带缺省值
-						opt = opt.split('=');
-						let defval = opt[1];
-						opt = opt[0];
-						if (this.options.indexOf(opt) < 0 && this.optionlist !== opt) {
-							if (!!range) this.valueRanges[opt] = range;
+						else {
 							this.options.push(opt);
 							this.defaultValues[opt] = getParamValue(defval);
 						}
 					}
-					else { // 不带缺省值
-						if (this.options.indexOf(opt) < 0 && this.optionlist !== opt) {
-							if (!!range) this.valueRanges[opt] = range;
+				}
+				else { // 不带缺省值
+					if (this.options.indexOf(opt) < 0 && this.optionlist !== opt) {
+						if (!!range) this.valueRanges[opt] = range;
+						if (isArray) {
+							this.optionlist = opt;
+						}
+						else {
 							this.options.push(opt);
 						}
 					}
@@ -254,7 +246,7 @@ class Params {
 			let r = this.valueRanges[n];
 			if (!!v) v = getParamValue(v);
 			else v = this.defaultValues[n];
-			if (!!v) {
+			if (!!v || v === false || v === 0) {
 				if (!!r && !(v + '').match(r)) {
 					throw new Error("参数 " + n + " 的值 " + v + " 不符合取值范围 " + r + " !");
 				}
@@ -972,6 +964,28 @@ const Parser = config => {
 		if (config.mode === 'process') {
 			let args = process.argv.copy();
 			args.splice(0, 2);
+			args = args.map(arg => {
+				if (arg.indexOf(" ") >= 0) {
+					let m = arg.match(/^(--?\w+)=/);
+					if (!!m) {
+						let head = m[1];
+						let rest = arg.substring(m[0].length, arg.length);
+						rest = rest.replace(/ +/g, "[:SPACE:]")
+						arg = head + ' "' + rest + '"';
+					} else {
+						arg = arg.replace(/ +/g, "[:SPACE:]")
+						arg = '"' + arg + '"';
+					}
+				} else {
+					let m = arg.match(/^(--?\w+)=/);
+					if (!!m) {
+						let head = m[1];
+						let rest = arg.substring(m[0].length, arg.length);
+						arg = head + ' ' + rest;
+					}
+				}
+				return arg;
+			});
 			args = args.join(' ');
 			command.parse(args);
 		}
@@ -1013,8 +1027,6 @@ const Parser = config => {
 			command.cli = rl;
 			command.stopInput = () => rl.stopInput();
 			command.resumeInput = () => rl.resumeInput();
-
-			rl.answer('游戏开始喽~~~~');
 		}
 		return command;
 	};
@@ -1043,5 +1055,4 @@ Parser.Helper = {
 Parser.getCLLength = getCLLength;
 
 module.exports = Parser;
-
-_('Utils.CL').CLP = Parser;
+_('CL.CLP', Parser);

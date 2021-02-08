@@ -107,4 +107,4 @@ class Channel {
 }
 
 exports.Channel = Channel;
-_('Utils.Events').Channel = Channel;
+_('Events.Channel', Channel);

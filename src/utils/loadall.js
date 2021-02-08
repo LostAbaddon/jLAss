@@ -56,7 +56,11 @@ const except = url => {
 	});
 };
 
-global.loadall = (url, is_all=true) => {
+global.loadall = (...args) => {
+	var is_all = args.filter(b => (b === true || b === false))[0];
+	if (is_all !== true && is_all !== false) is_all = true;
+	var url = args.filter(s => s + '' === s);
+	url = path.join(...url);
 	url = getDir(url);
 	loadall(url, is_all);
 	process.emit('load');

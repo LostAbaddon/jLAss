@@ -263,6 +263,5 @@ EventManager.EventData = EventData;
 EventManager.AsyncEventManager = AsyncEventManager;
 
 module.exports = EventManager;
-
-_('Utils.Events').EventManager = EventManager;
-_('Utils.Events').AsyncEventManager = AsyncEventManager;
+_('Utils.Events.EventManager', EventManager);
+_('Utils.Events.AsyncEventManager', AsyncEventManager);

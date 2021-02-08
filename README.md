@@ -1,12 +1,10 @@
 # jLAss
 
+-	Version: 1.0.0
+-	Author: [LostAbaddon](mailto:lostabaddon@gmail.com)
+-	NodeJS Version: >= 14.0.0
+
 My Personal Javascript Core Lib
-
-> Author: [LostAbaddon](mailto:lostabaddon@gmail.com)
-
-> Version: 0.1.5
-
-> NodeJS Version: >= 10.0.0
 
 ## Includes
 

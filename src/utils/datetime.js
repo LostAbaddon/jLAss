@@ -18,11 +18,10 @@ const formatString = (str, len) => {
 	if (len === 0) return '';
 	var l = str.length;
 	if (l > len) str = str.substring(l - len, l);
-	else if (l < len) str = str.prepadding(len, '0');
+	else if (l < len) str = str.padStart(len, '0');
 	return str;
 };
 const getDateString = (Y, M, D, link) => {
-	link = link || '/';
 	var temp = [];
 	if (Y.length > 0) temp.push(Y);
 	if (M.length > 0) temp.push(M);
@@ -30,7 +29,6 @@ const getDateString = (Y, M, D, link) => {
 	return temp.join(link);
 };
 const getTimeString = (h, m, s, ms, link) => {
-	link = link || ':';
 	var temp = [];
 	if (h.length > 0) temp.push(h);
 	if (m.length > 0) temp.push(m);

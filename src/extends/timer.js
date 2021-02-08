@@ -11,6 +11,10 @@ if (!!global.setTimeout) { // For Process instead of Thread
 	global.nextTick = !!process ? process.nextTick || global.setImmediate : global.setImmediate;
 	global.wait = promisify((delay, next) => {
 		var start = new Date().getTime();
+		if (Function.is(delay)) {
+			next = delay;
+			delay = 0;
+		}
 		setTimeout(() => next(new Date().getTime() - start), delay);
 	});
 	global.waitLoop = promisify(next => {
@@ -21,10 +25,19 @@ if (!!global.setTimeout) { // For Process instead of Thread
 		var start = new Date().getTime();
 		nextTick(() => next(new Date().getTime() - start));
 	});
-	// if (!!global.queueMicrotask) global.waitQueue = promisify(next => {
-	// 	var start = new Date().getTime();
-	// 	queueMicrotask(() => next(new Date().getTime() - start));
-	// });
+	if (!!global.queueMicrotask) global.waitQueue = promisify(next => {
+		var start = new Date().getTime();
+		queueMicrotask(() => next(new Date().getTime() - start));
+	});
+}
+
+if (global._env === "node") {
+	global.now = () => {
+		var t = process.hrtime();
+		return t[0] * 1000 + t[1] / 1000000;
+	}
+} else {
+	global.now = () => Date.now();
 }
 
 global.Clock = class Clock {
@@ -59,7 +72,7 @@ global.Clock = class Clock {
 		if (!is_text) return list;
 		list = list.map(l => {
 			var lab = l[1], nan = l[0];
-			lab = lab.prepadding(max);
+			lab = lab.padStart(max, ' ');
 			return lab + '\t' + nan;
 		});
 		return list.join('\n');

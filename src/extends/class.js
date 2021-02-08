@@ -6,6 +6,18 @@
  * Date:	2017.11.09
  */
 
+global.ProtoType = Function.prototype;
+Object.defineProperty(ProtoType, 'kerneltype', {
+	get () {
+		if (this === ProtoType) return this;
+		if (this.__proto__ === ProtoType) return this;
+		if (!this.__proto__.kerneltype) return this;
+		return this.__proto__.kerneltype;
+	},
+	enumerable: false,
+	configurable: false
+});
+
 Object.prototype.isSubClassOf = function (target) {
 	if (typeof this !== 'function') return false;
 	var cls = this;

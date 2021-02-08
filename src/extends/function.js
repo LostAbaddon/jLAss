@@ -21,7 +21,8 @@ const promisify = (fn) => {
 	if (!!fn._promised) return fn;
 	var afun = (...args) => new Promise((res, rej) => {
 		try {
-			setImmediate(() => fn(...args, res));
+			fn(...args, res, rej);
+			// setImmediate(() => fn(...args, res, rej));
 		}
 		catch (err) {
 			rej(err);
@@ -45,7 +46,8 @@ promisify.withTimeout = (fn) => {
 			};
 			try {
 				start_time = new Date().getTime();
-				setImmediate(() => fn(...args, res));
+				fn(...args, res, rej);
+				// setImmediate(() => fn(...args, res, rej));
 			}
 			catch (err) {
 				rej(err);
@@ -142,7 +144,6 @@ global.promisify = Function.promisify = promisify;
  * 将函数一次化，此后只返回第一次运行的结果，支持Promisify对象
  * oncefun.refresh可重新执行
  */
-
 global.oncilize = Function.oncilize = fn => {
 	var called = false, value, ofn;
 	if (fn._promised) {
@@ -173,7 +174,6 @@ global.oncilize = Function.oncilize = fn => {
  * 将函数堆栈化，可将一段时间内的输入都保存下来，只输出最后一次（stack模式）或者所有都输出（pump模式），默认为stack模式
  * pumpfun.dump可立即执行
  */
-
 global.pumplize = Function.pumplize = (fn, cb, last_only=true) => {
 	var stack = [], start_time = null, timeout = 100, timer = null;
 	var done = () => {

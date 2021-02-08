@@ -98,3 +98,6 @@ Start to build my personal js-core lib.
 
 ### 2018.11.15
 -	增加Channel和Tunnel的合并功能
+
+### 2021.02.08
+-	用实际使用的新库来替代原有的库（改动太大，懒得样样都记录了……）

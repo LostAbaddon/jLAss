@@ -141,5 +141,4 @@ Broadcast.Event = BroadcastEvent;
 Broadcast.Types = Symbol.setSymbols(null, ['QUEST', 'REPLY']);
 
 module.exports = Broadcast;
-
-_('Utils.Events').Broadcast = Broadcast;
+_('Events.Broadcast', Broadcast);

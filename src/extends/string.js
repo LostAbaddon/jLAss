@@ -2,19 +2,9 @@
  * Name:	String Utils
  * Desc:    String 类拓展工具
  * Author:	LostAbaddon
- * Version:	0.0.1
- * Date:	2017.11.09
+ * Version:	0.0.2
+ * Date:	2019.06.05
  */
-
-String.prototype.prepadding = function (len = 0, pad = ' ', is_right = false) {
-	var l = this.length;
-	l = len - l;
-	if (l <= 0) return this.toString();
-	var result = this.toString();
-	if (!is_right) for (let i = 0; i < l; i ++) result = pad + result;
-	else for (let i = 0; i < l; i ++) result = result + pad;
-	return result;
-};
 
 const KeySet = [];
 (() => {
@@ -29,8 +19,7 @@ String.random = (len) => {
 	}
 	return rnd;
 };
-String.blank = (len, block) => {
-	block = block || ' ';
+String.blank = (len, block = ' ') => {
 	var line = '';
 	for (let i = 0; i < len; i ++) line += block;
 	return line;
@@ -40,3 +29,19 @@ String.is = (str) => {
 	if (typeof str === 'string') return true;
 	return false;
 };
+String.prototype.copy = String.prototype.duplicate = function () {
+	return String(this).toString();
+};
+Object.defineProperty(String.prototype, 'copy', { enumerable: false });
+Object.defineProperty(String.prototype, 'duplicate', { enumerable: false });
+
+if (global._env === "node") {
+	Object.defineProperty(String.prototype, 'byteLength', {
+		get () {
+			var buf = Buffer.from(this, 'utf8');
+			return buf.byteLength;
+		},
+		enumerable: false,
+		configurable: false
+	});
+}

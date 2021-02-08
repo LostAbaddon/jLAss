@@ -9,19 +9,31 @@
 const FS = require('fs');
 const Path = require('path');
 
-global.Utils.preparePath = async (path, cb) => {
-	var has = FS.access(path, (err) => {
-		if (!err) return cb(true);
+const preparePath = (path, cb) => new Promise(async res => {
+	FS.access(path, (err) => {
+		if (!err) {
+			if (!!cb) cb(true);
+			res(true);
+			return;
+		}
 		var parent = Path.parse(path).dir;
-		global.Utils.preparePath(parent, (result) => {
-			if (!result) return cb(false);
+		preparePath(parent, (result) => {
+			if (!result) {
+				if (!!cb) cb(false);
+				res(false);
+				return;
+			}
 			FS.mkdir(path, (err) => {
-				if (!err) return cb(true);
+				if (!err) {
+					if (!!cb) cb(true);
+					res(true);
+					return;
+				}
 			});
 		});
 	});
-};
-global.Utils.preparePathSync = path => {
+});
+const preparePathSync = path => {
 	var has;
 	try {
 		has = FS.accessSync(path);
@@ -29,12 +41,16 @@ global.Utils.preparePathSync = path => {
 	}
 	catch (err) {}
 	var parent = Path.parse(path).dir;
-	has = global.Utils.preparePathSync(parent);
+	has = preparePathSync(parent);
 	if (!has) return false;
 	try {
 		FS.mkdirSync(path);
+		return true;
 	}
 	catch (err) {
 		return false;
 	}
 };
+
+_("Utils").preparePath = preparePath;
+_("Utils").preparePathSync = preparePathSync;

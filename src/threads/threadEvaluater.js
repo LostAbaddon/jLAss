@@ -4,6 +4,7 @@
  * Author:	LostAbaddon
  * Version:	0.0.1
  * Date:	2018.11.04
+ * 备注：未来可以用VM来取代eval
  */
 
 register('init', (data, event) => {

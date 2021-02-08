@@ -2,8 +2,8 @@
  * Name:	Thread Manager
  * Desc:    线程池管理工具
  * Author:	LostAbaddon
- * Version:	0.0.3
- * Date:	2018.11.14
+ * Version:	0.0.4
+ * Date:	2019.06.26
  */
 
 if (!global._canThread) return;
@@ -12,7 +12,18 @@ const { Worker } = require('worker_threads');
 const EventEmitter = require('events');
 const TunnelManager = require('./threadTunnel');
 
+const SymbInitWorker = Symbol('InitWorker');
+const newEventID = () => {
+	var id = Array.generate(16, i => Math.floor(Math.random() * 256));
+	id = new Uint8Array(id).toBuffer().toString('base64');
+	return id;
+};
+
+var finished = false;
+
 class ThreadWorker extends EventEmitter {
+	#worker = null;
+	#tm = null;
 	constructor (files, data) {
 		super();
 
@@ -23,44 +34,56 @@ class ThreadWorker extends EventEmitter {
 		else {
 			files = global.getLoadPath(files);
 		}
-		this._worker = new Worker(__dirname + '/threadWorker.js', {
+		this[SymbInitWorker](files, data);
+		this.tasks = new Map();
+		this.stat = ThreadWorker.Stat.IDLE;
+
+		this.#tm = new TunnelManager((...args) => {this.request(...args)});
+		this.on('suicide', this.suicide);
+		this.on('__tunnel__', msg => {
+			if (msg.event === 'pull') {
+				this.#tm.gotPull(msg.id);
+			}
+			else if (msg.event === 'nil') {
+				this.#tm.gotNil(msg.id);
+			}
+			else if (msg.event === 'data') {
+				this.#tm.gotData(msg.id, msg.data);
+			}
+			else if (msg.event === 'close') {
+				this.#tm.closeTunnel(msg.id, true);
+			}
+			else if (msg.event === 'kill') {
+				this.#tm.killTunnel(msg.id, true);
+			}
+			else console.log('master got wrong msg >>\n', msg);
+		});
+	}
+	[SymbInitWorker] (files, data) {
+		if (finished) return;
+		this.#worker = new Worker(__dirname + '/threadWorker.js', {
 			workerData : {
 				scripts: files,
 				data: data
 			}
-		});
-		this.tasks = new Map();
-		this.stat = ThreadWorker.Stat.IDLE;
-
-		this._worker.on('message', data => {
-			if (!data || !data.event || !data.postAt) return;
-			var tag = data.event;
+		}).on('message', data => {
+			if (!data || !data.eventID || !data.postAt) return;
+			var tag = data.eventID;
 			if (!!data.originEvent) {
 				data.event = data.originEvent;
 				delete data.originEvent;
 			}
 			this.emit(tag, data.data, data);
-		});
-		this.on('suicide', this.suicide);
-
-		this._tm = new TunnelManager((...args) => {this.request(...args)});
-		this.on('__tunnel__', msg => {
-			if (msg.event === 'pull') {
-				this._tm.gotPull(msg.id);
+		}).on('error', err => {
+			console.error(err);
+		}).on('exit', code => {
+			if (code !== 0) {
+				console.log('Thread Worker Exit with Code: ' + code);
+				if (finished) return;
+				this[SymbInitWorker](files, data);
+			} else {
+				console.log('Thread Worker Exit...');
 			}
-			else if (msg.event === 'nil') {
-				this._tm.gotNil(msg.id);
-			}
-			else if (msg.event === 'data') {
-				this._tm.gotData(msg.id, msg.data);
-			}
-			else if (msg.event === 'close') {
-				this._tm.closeTunnel(msg.id, true);
-			}
-			else if (msg.event === 'kill') {
-				this._tm.killTunnel(msg.id, true);
-			}
-			else console.log('master got wrong msg >>\n', msg);
 		});
 	}
 	load (files) {
@@ -71,7 +94,7 @@ class ThreadWorker extends EventEmitter {
 		else {
 			files = global.getLoadPath(files);
 		}
-		this._worker.postMessage({
+		this.#worker.postMessage({
 			event: 'loadfile',
 			needReply: false,
 			data: files,
@@ -81,7 +104,7 @@ class ThreadWorker extends EventEmitter {
 	}
 	send (msg) {
 		if (this.stat === ThreadWorker.Stat.DEAD) return;
-		this._worker.postMessage({
+		this.#worker.postMessage({
 			event: 'message',
 			needReply: false,
 			data: msg,
@@ -100,17 +123,18 @@ class ThreadWorker extends EventEmitter {
 			this.stat = ThreadWorker.Stat.BUSY;
 
 			var n = Date.now();
-			var eventTag = event + ':' + n;
-			this.tasks.set(eventTag, true);
+			var eventID = newEventID();
+			this.tasks.set(eventID, true);
 
-			this._worker.postMessage({
+			this.#worker.postMessage({
 				event,
 				needReply: true,
 				data,
-				postAt: n
+				postAt: n,
+				eventID
 			});
-			this.once('reply:' + eventTag, (data, event) => {
-				this.tasks.delete(eventTag);
+			this.once(eventID, (data, event) => {
+				this.tasks.delete(eventID);
 				if (this.tasks.size === 0) {
 					this.stat = ThreadWorker.Stat.IDLE;
 					setImmediate(() => this.emit("allJobsDone"));
@@ -129,7 +153,7 @@ class ThreadWorker extends EventEmitter {
 		this.tasks.set(eventTag, true);
 
 		return new Promise((res, rej) => {
-			this._worker.postMessage({
+			this.#worker.postMessage({
 				event: 'evaluate',
 				needReply: true,
 				data: {
@@ -161,12 +185,12 @@ class ThreadWorker extends EventEmitter {
 	}
 	get id () {
 		if (this.stat === ThreadWorker.Stat.DEAD) return -1;
-		return this._worker.threadId;
+		return this.#worker.threadId;
 	}
 	suicide () {
 		this.stat = ThreadWorker.Stat.DEAD;
-		this._worker.terminate();
-		this._worker = null;
+		this.#worker.terminate();
+		this.#worker = null;
 		this.tasks = null;
 		for (let key in this._events) {
 			let cbs = this._events[key];
@@ -175,7 +199,7 @@ class ThreadWorker extends EventEmitter {
 		}
 	}
 	getTunnel (id) {
-		return this._tm.getTunnel(id);
+		return this.#tm.getTunnel(id);
 	}
 }
 ThreadWorker.Stat = Symbol.set(['IDLE', 'BUSY', 'DEAD']);
@@ -187,6 +211,7 @@ const pool_default = {
 };
 
 const choiseThread = () => {
+	if (!pool) return null;
 	pool.sort((ta, tb) => {
 		if (ta.stat !== ThreadWorker.Stat.DEAD && tb.stat === ThreadWorker.Stat.DEAD) return -1;
 		if (tb.stat !== ThreadWorker.Stat.DEAD && ta.stat === ThreadWorker.Stat.DEAD) return 1;
@@ -238,6 +263,10 @@ const TM = {
 		request: (event, data, callback) => {
 			return new Promise(async (res, rej) => {
 				var th = choiseThread();
+				if (!th) {
+					rej();
+					return;
+				}
 				var result;
 				try {
 					result = await th.request(event, data);
@@ -317,12 +346,12 @@ const TM = {
 			});
 		},
 		killAll: () => {
-			pool.forEach(th => th.suicide());
+			finished = true;
+			if (!!pool) pool.forEach(th => th.suicide());
 			pool = null;
 		}
 	}
 };
 
 module.exports = TM;
-
-_('Utils.Threads', TM);
+_('Threads', TM);

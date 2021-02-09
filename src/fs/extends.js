@@ -31,14 +31,9 @@ const manager = {
 	prepare: {}
 };
 
-FS.hasFile = async pathname => {
-	try {
-		await FSP.access(pathname);
-		return true;
-	} catch {
-		return false;
-	}
-};
+FS.hasFile = pathname => new Promise((res, rej) => {
+	FS.exists(pathname, res);
+});
 FSP.hasFile = FS.hasFile;
 
 // 批量创建目录，自动处理依赖关系，并解决异步创建过程中的冲突问题

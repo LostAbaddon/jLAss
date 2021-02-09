@@ -2,7 +2,7 @@
 
 My Personal Javascript Core Lib
 
-> Author: [LostAbaddon](mailto:lostabaddon@gmail.com)
+- Author: [LostAbaddon](mailto:lostabaddon@gmail.com)
 
 ---
 
@@ -64,7 +64,7 @@ Start to build my personal js-core lib.
 ### 2018.11.05
 
 -	pump 化函数提供 dump 直接输出的功能
--	线程池管理增加更新闲置线程与更新所有线程的功能（用于释放线程中加载太多的文件而产生的内存压力）<br>
+-	线程池管理增加更新闲置线程与更新所有线程的功能（用于释放线程中加载太多的文件而产生的内存压力）
 -	增加基于 Map 的 LRUCache
 
 ## 0.1.3
@@ -90,7 +90,7 @@ Start to build my personal js-core lib.
 -	增加通道channel<br>
 	生产者：`channel.push(data)`或阻塞式：`await channel.push(data)`<br>
 	消费者：`var data = await channel.pull()`
-	关闭：`channel.close()
+	关闭：`channel.close()`
 	强制关闭：`channel.kill()`
 
 ### 2018.11.14
@@ -102,3 +102,7 @@ Start to build my personal js-core lib.
 ### 2021.02.08
 -	用实际使用的新库来替代原有的库（改动太大，懒得样样都记录了……）
 -	增加批量加载 jLAss 内模块组的函数 loadjLAssModule
+
+### 2021.02.09
+-	新增使用 fileSystem 函数 hasFile 与 getFolderMap
+-	在 fileSystem/promisis 中增加自定义函数

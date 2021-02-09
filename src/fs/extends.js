@@ -14,7 +14,9 @@
  */
 
 const FS = require('fs');
+const FSP = require('fs/promises');
 const Path = require('path');
+const Utils = require('util');
 const setStyle = require('../commandline/setConsoleStyle');
 
 const IDLE = Symbol('IDLE');
@@ -22,12 +24,22 @@ const BUSY = Symbol('BUSY');
 const FREE = Symbol('FREE');
 const DIED = Symbol('DIED');
 
-var manager = {
+const manager = {
 	tasks: {},
 	status: IDLE,
 	hooks: {},
 	prepare: {}
 };
+
+FS.hasFile = async pathname => {
+	try {
+		await FSP.access(pathname);
+		return true;
+	} catch {
+		return false;
+	}
+};
+FSP.hasFile = FS.hasFile;
 
 // 批量创建目录，自动处理依赖关系，并解决异步创建过程中的冲突问题
 FS.mkfolder = (path, cb) => new Promise(async (resolve, reject) => {
@@ -53,7 +65,8 @@ FS.mkfolder = (path, cb) => new Promise(async (resolve, reject) => {
 		if (!!cb) cb();
 	}
 });
-var mkfTask = pool => new Promise((resolve, reject) => {
+FSP.mkfolder = FS.mkfolder;
+const mkfTask = pool => new Promise((resolve, reject) => {
 	var path = pool[pool.length - 1];
 	manager.hooks[path] = err => {
 		if (!err) resolve();
@@ -75,7 +88,7 @@ var mkfTask = pool => new Promise((resolve, reject) => {
 	manager.status = BUSY;
 	mkLoop();
 });
-var mkLoop = () => {
+const mkLoop = () => {
 	var keys = Object.keys(manager.tasks);
 	keys.sort((ka, kb) => ka > kb ? 1 : -1);
 	var done = true;
@@ -178,6 +191,7 @@ FS.filterPath = (paths, cb) => new Promise((res, rej) => {
 		});
 	});
 });
+FSP.filterPath = FS.filterPath;
 // 批量创建文件夹
 FS.createFolders = (folders, logger) => new Promise((res, rej) => {
 	logger = logger || console;
@@ -189,21 +203,25 @@ FS.createFolders = (folders, logger) => new Promise((res, rej) => {
 		return;
 	}
 	folders.forEach(async folder => {
-		logger.log(setStyle('创建目录：', 'bold') + folder);
-		var err = await FS.mkfolder(folder);
-		if (!!err) {
-			logger.error(setStyle('创建目录错误：', 'red bold') + folder);
-			logger.error(err);
-			result.failed.push(folder);
-		}
-		else {
-			result.success.push(folder);
+		var has = await FS.hasFile(folder);
+		if (!has) {
+			logger.log(setStyle('创建目录：', 'bold') + folder);
+			let err = await FS.mkfolder(folder);
+			if (!!err) {
+				logger.error(setStyle('创建目录错误：', 'red bold') + folder);
+				logger.error(err);
+				result.failed.push(folder);
+			}
+			else {
+				result.success.push(folder);
+			}
 		}
 		count --;
 		if (count > 0) return;
 		res(result);
 	});
 });
+FSP.createFolders = FS.createFolders;
 // 批量创建空文件
 FS.createEmptyFiles = (files, logger) => new Promise((res, rej) => {
 	logger = logger || console;
@@ -231,6 +249,7 @@ FS.createEmptyFiles = (files, logger) => new Promise((res, rej) => {
 		});
 	});
 });
+FSP.createEmptyFiles = FS.createEmptyFiles;
 // 批量删除文件
 FS.deleteFiles = (files, logger) => new Promise((res, rej) => {
 	logger = logger || console;
@@ -258,8 +277,9 @@ FS.deleteFiles = (files, logger) => new Promise((res, rej) => {
 		});
 	});
 });
+FSP.deleteFiles = FS.deleteFiles;
 // 批量删除文件夹
-var deleteFolders = (files, logger) => new Promise((res, rej) => {
+const deleteFolders = (files, logger) => new Promise((res, rej) => {
 	logger = logger || console;
 	var count = files.length, result = { success: [], failed: [] };
 	if (count === 0) {
@@ -285,7 +305,7 @@ var deleteFolders = (files, logger) => new Promise((res, rej) => {
 		});
 	});
 });
-var deleteFoldersForcely = (files, logger) => new Promise((res, rej) => {
+const deleteFoldersForcely = (files, logger) => new Promise((res, rej) => {
 	logger = logger || console;
 	var count = files.length, result = { success: [], failed: [] };
 	if (count === 0) {
@@ -340,11 +360,13 @@ var deleteFoldersForcely = (files, logger) => new Promise((res, rej) => {
 	});
 });
 FS.deleteFolders = (files, force, logger) => new Promise(async (res, rej) => {
+	if (String.is(files)) files = [files];
 	var result;
 	if (!!force) result = await deleteFoldersForcely(files, logger);
 	else result = await deleteFolders(files, logger);
 	res(result);
 });
+FSP.deleteFolders = FS.deleteFolders;
 
 class FolderWatcher {
 	constructor (folder, delay, isFile) {
@@ -394,3 +416,28 @@ FS.watchFolderAndFile = (folder, delay, isFile, onCreate, onDelete) => {
 	if (onDelete instanceof Function) watcher.onDelete(onDelete);
 	return watcher;
 };
+FSP.watchFolderAndFile = FS.watchFolderAndFile;
+
+FS.getFolderMap = async (path, forbiddens, logger) => {
+	if (!Array.is(forbiddens)) {
+		logger = forbiddens;
+		forbiddens = [];
+	}
+	logger = logger || console;
+
+	var files = await FSP.readdir(path);
+	var map = { files: [], subs: {} };
+	await Promise.all(files.map(async file => {
+		if (forbiddens.includes(file)) return;
+		file = Path.join(path, file);
+		var stat = await FSP.stat(file);
+		if (stat.isDirectory()) {
+			map.subs[file] = await FS.getFolderMap(file);
+		}
+		else if (stat.isFile()) {
+			map.files.push(file);
+		}
+	}));
+	return map;
+};
+FSP.getFolderMap = FS.getFolderMap;

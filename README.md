@@ -1,6 +1,6 @@
 # jLAss
 
--	Version: 1.0.1
+-	Version: 1.0.2
 -	Author: [LostAbaddon](mailto:lostabaddon@gmail.com)
 -	NodeJS Version: >= 14.0.0
 
@@ -288,6 +288,8 @@ cmdLauncher.launch();
 -	FS.deleteFolders
 	Delete list of folders.
 -	FS.watchFolderAndFile
+-	FS.hasFile
+-	FS.getFolderMap
 -	Utils.preparePath<br>
 	Check path and create necessary folders.
 -	Utils.preparePathSync<br>

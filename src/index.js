@@ -18,6 +18,7 @@ try {
 		window.global = window;
 		global._env = 'browser';
 		global.require = () => {};
+		global.module = { exports: {} };
 	} else {
 		global._env = 'node';
 	}
@@ -25,7 +26,7 @@ try {
 	global._env = 'node';
 }
 
-if (!process.execArgv.includes('--expose-gc')) global.gc = () => {};
+if (!!process && !!process.execArgv && !process.execArgv.includes('--expose-gc')) global.gc = () => {};
 
 require('./namespace.js');
 require('./utils/loadall');

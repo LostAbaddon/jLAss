@@ -46,4 +46,4 @@ if (!global.noEventModules) {
 
 require('./moduleManager');
 
-global.loadjLAssModule = mod => {loadall(__dirname, "./" + mod)};
+if (global._env === 'node') global.loadjLAssModule = mod => {loadall(__dirname, "./" + mod)};

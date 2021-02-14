@@ -489,7 +489,7 @@ const getFileTime = async file => {
 	var time = 0;
 	try {
 		time = await FS.stat(file);
-		time = Math.mat(time.mtimeMs, time.ctimeMs);
+		time = Math.max(time.mtimeMs, time.ctimeMs);
 	}
 	catch {
 		time = 0;

@@ -451,7 +451,7 @@ FS.copyFolder = async (source, path, onlyNew, logger) => {
 	var map = await FS.getFolderMap(source);
 	var folders = {};
 	folders[source.split(/[\\\/]/).length] = [source];
-	map.folders.forEach(f => {
+	map.subs.forEach(f => {
 		var l = f.split(/[\\\/]/).length;
 		var m = folders[l];
 		if (!m) {

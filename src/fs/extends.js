@@ -488,7 +488,7 @@ FSP.copyFolder = FS.copyFolder;
 const getFileTime = async file => {
 	var time = 0;
 	try {
-		time = await FS.stat(file);
+		time = await FSP.stat(file);
 		time = Math.max(time.mtimeMs, time.ctimeMs);
 	}
 	catch {

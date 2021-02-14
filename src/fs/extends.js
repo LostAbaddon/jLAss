@@ -436,6 +436,20 @@ FS.getFolderMap = async (path, forbiddens, logger) => {
 	return map;
 };
 FSP.getFolderMap = FS.getFolderMap;
+FS.convertFileMap = map => {
+	var result = { files: [], folders: [] };
+	result.files.push(...map.files);
+	var folders = Object.keys(map.subs);
+	result.folders.push(...folders);
+	folders.forEach(sub => {
+		var subs = map.subs[sub];
+		subs = convertFileMap(subs);
+		result.files.push(...subs.files);
+		result.folders.push(...subs.folders);
+	});
+	return result;
+};
+FSP.convertFileMap = FS.convertFileMap;
 
 FS.copyFolder = async (source, path, onlyNew, logger) => {
 	if (!Boolean.is(onlyNew)) {
@@ -449,9 +463,10 @@ FS.copyFolder = async (source, path, onlyNew, logger) => {
 	}
 
 	var map = await FS.getFolderMap(source);
+	map = FS.convertFileMap(map);
 	var folders = {};
 	folders[source.split(/[\\\/]/).length] = [source];
-	map.subs.forEach(f => {
+	map.folders.forEach(f => {
 		var l = f.split(/[\\\/]/).length;
 		var m = folders[l];
 		if (!m) {

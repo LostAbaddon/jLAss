@@ -465,8 +465,9 @@ FS.copyFolder = async (source, path, onlyNew, logger) => {
 	var map = await FS.getFolderMap(source);
 	map = FS.convertFileMap(map);
 	var folders = {};
-	folders[source.split(/[\\\/]/).length] = [source];
+	folders[path.split(/[\\\/]/).length] = [path];
 	map.folders.forEach(f => {
+		f = f.replace(source, path);
 		var l = f.split(/[\\\/]/).length;
 		var m = folders[l];
 		if (!m) {

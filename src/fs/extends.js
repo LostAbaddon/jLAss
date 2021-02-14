@@ -491,7 +491,7 @@ FS.copyFolder = async (source, path, onlyNew, logger) => {
 		if (onlyNew) need_copy = await FS.doesSourceFileNewerThanTargetFile(file, target);
 		if (need_copy) {
 			try {
-				await FS.copyFile(source, target);
+				await FSP.copyFile(source, target);
 			} catch (err) {
 				logger.error(err);
 			}

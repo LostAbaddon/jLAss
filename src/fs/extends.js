@@ -443,7 +443,7 @@ FS.convertFileMap = map => {
 	result.folders.push(...folders);
 	folders.forEach(sub => {
 		var subs = map.subs[sub];
-		subs = convertFileMap(subs);
+		subs = FS.convertFileMap(subs);
 		result.files.push(...subs.files);
 		result.folders.push(...subs.folders);
 	});

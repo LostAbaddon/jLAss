@@ -99,10 +99,20 @@ Start to build my personal js-core lib.
 ### 2018.11.15
 -	增加Channel和Tunnel的合并功能
 
+## 1.0.0
+
 ### 2021.02.08
 -	用实际使用的新库来替代原有的库（改动太大，懒得样样都记录了……）
 -	增加批量加载 jLAss 内模块组的函数 loadjLAssModule
 
+## 1.0.2
+
 ### 2021.02.09
 -	新增使用 fileSystem 函数 hasFile 与 getFolderMap
 -	在 fileSystem/promisis 中增加自定义函数
+
+## 1.0.3
+
+### 2021.02.14
+-	新增判断源文件是否比目标文件更新的辅助函数 doesSourceFileNewerThanTargetFile
+-	新增复制整个文件夹的函数 copyFodler

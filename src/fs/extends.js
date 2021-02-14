@@ -436,3 +436,72 @@ FS.getFolderMap = async (path, forbiddens, logger) => {
 	return map;
 };
 FSP.getFolderMap = FS.getFolderMap;
+
+FS.copyFolder = async (source, path, onlyNew, logger) => {
+	if (!Boolean.is(onlyNew)) {
+		logger = onlyNew;
+		onlyNew = false;
+	}
+	logger = logger || console;
+	if (!(await FS.hasFile(source))) {
+		logger.log('No such file: ' + source);
+		return;
+	}
+
+	var map = await FS.getFolderMap(source);
+	var folders = {};
+	folders[source.split(/[\\\/]/).length] = [source];
+	map.folders.forEach(f => {
+		var l = f.split(/[\\\/]/).length;
+		var m = folders[l];
+		if (!m) {
+			m = [];
+			folders[l] = m;
+		}
+		m.push(f);
+	});
+	for (let fds in folders) {
+		fds = folders[fds];
+		if (!fds) continue;
+		try {
+			await FS.createFolders(fds, logger);
+		}
+		catch (err) {
+			logger.error(err);
+		}
+	}
+
+	await Promise.all(map.files.map(async file => {
+		var target = file.replace(source, path), need_copy = true;
+		if (onlyNew) need_copy = await FS.doesSourceFileNewerThanTargetFile(file, target);
+		if (need_copy) {
+			try {
+				await FS.copyFile(source, target);
+			} catch (err) {
+				logger.error(err);
+			}
+		}
+	}));
+};
+FSP.copyFolder = FS.copyFolder;
+
+const getFileTime = async file => {
+	var time = 0;
+	try {
+		time = await FS.stat(file);
+		time = Math.mat(time.mtimeMs, time.ctimeMs);
+	}
+	catch {
+		time = 0;
+	}
+	return time;
+};
+FS.doesSourceFileNewerThanTargetFile = async (source, target) => {
+	var time1 = 0, time2 = 0;
+	[time1, time2] = await Promise.all([getFileTime(source), getFileTime(target)]);
+
+	if (time1 === 0) return false; // 源文件出错
+	if (time1 > time2) return true;
+	return false;
+};
+FSP.doesSourceFileNewerThanTargetFile = FS.doesSourceFileNewerThanTargetFile;

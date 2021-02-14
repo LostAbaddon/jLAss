@@ -1,10 +1,16 @@
 # jLAss
 
--	Version: 1.0.2
+-	Version: 1.0.3
 -	Author: [LostAbaddon](mailto:lostabaddon@gmail.com)
 -	NodeJS Version: >= 14.0.0
 
 My Personal Javascript Core Lib
+
+## Install
+
+```
+npm install https://github.com/LostAbaddon/jLAss.git --save
+```
 
 ## Includes
 

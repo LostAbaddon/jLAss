@@ -149,7 +149,7 @@ promisify(fn(..., res)).timeout([timeout], [callback]);
 
 ### Proxy
 
--	proxy.toObject
+-	Proxy.toObject
 	Convert Proxy delegator to a normal object.
 
 ## Events [TBD]

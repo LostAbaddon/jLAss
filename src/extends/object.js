@@ -71,3 +71,19 @@ Boolean.prototype.duplicate = function () {
 	return true;
 };
 Object.defineProperty(Boolean.prototype, 'duplicate', { enumerable: false });
+
+if (!!Proxy) {
+	Proxy.prototype.toObject = function () {
+		var result = {};
+		for (let name in this) {
+			let value = this[name];
+			if (value instanceof Proxy) {
+				result[name] = value.toObject();
+			}
+			else {
+				result[name] = value;
+			}
+		}
+		return result;
+	};
+}

@@ -147,6 +147,11 @@ promisify(fn(..., res)).timeout([timeout], [callback]);
 -	Math.range<br>
 	Pick a random number in a range.
 
+### Proxy
+
+-	proxy.toObject
+	Convert Proxy delegator to a normal object.
+
 ## Events [TBD]
 
 Some utils for event-related functions.

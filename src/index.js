@@ -26,7 +26,7 @@ try {
 	global._env = 'node';
 }
 
-if (!!process && !!process.execArgv && !process.execArgv.includes('--expose-gc')) global.gc = () => {};
+if (global._env === 'node') if (!!process && !!process.execArgv && !process.execArgv.includes('--expose-gc')) global.gc = () => {};
 
 require('./namespace.js');
 require('./utils/loadall');

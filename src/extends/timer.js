@@ -8,7 +8,7 @@
 
 if (!!global.setTimeout) { // For Process instead of Thread
 	global.setImmediate = global.setImmediate || function (callback) { setTimeout(callback, 0); };
-	global.nextTick = !!process ? process.nextTick || global.setImmediate : global.setImmediate;
+	global.nextTick = (global._env === 'browser') ? global.setImmediate : (!!process ? process.nextTick || global.setImmediate : global.setImmediate);
 	global.wait = promisify((delay, next) => {
 		var start = new Date().getTime();
 		if (Function.is(delay)) {

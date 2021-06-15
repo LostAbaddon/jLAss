@@ -11,11 +11,6 @@ Boolean.is = obj => {
 	if (obj instanceof Boolean) return true;
 	return false;
 };
-BigInt.is = obj => {
-	if (typeof obj === "bigint") return true;
-	if (obj instanceof BigInt) return true;
-	return false;
-};
 Number.is = obj => {
 	if (typeof obj === "number") return true;
 	if (obj instanceof Number) return true;
@@ -62,17 +57,25 @@ Number.prototype.duplicate = function () {
 	return this * 1;
 };
 Object.defineProperty(Number.prototype, 'duplicate', { enumerable: false });
-BigInt.prototype.duplicate = function () {
-	return this * 1n;
-};
-Object.defineProperty(BigInt.prototype, 'duplicate', { enumerable: false });
 Boolean.prototype.duplicate = function () {
 	if (this === false || this.valueOf() === false) return false;
 	return true;
 };
 Object.defineProperty(Boolean.prototype, 'duplicate', { enumerable: false });
 
-if (!!Proxy) {
+if (!!global.BigInt) {
+	BigInt.is = obj => {
+		if (typeof obj === "bigint") return true;
+		if (obj instanceof BigInt) return true;
+		return false;
+	};
+	BigInt.prototype.duplicate = function () {
+		return this * BigInt(1);
+	};
+	Object.defineProperty(BigInt.prototype, 'duplicate', { enumerable: false });
+}
+
+if (!!global.Proxy) {
 	Proxy.toObject = proxy => {
 		var result = {};
 		for (let name in proxy) {
